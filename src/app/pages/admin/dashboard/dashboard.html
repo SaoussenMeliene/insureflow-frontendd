@@ -1,0 +1,295 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+
+  <!-- Sidebar -->
+  <aside class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-indigo-100">
+    <div class="p-6 h-full flex flex-col">
+
+      <!-- Logo -->
+      <div class="flex items-center gap-3 mb-8">
+        <img src="logo.png" alt="InsureFlow" class="h-10 w-auto object-contain" />
+      </div>
+
+      <!-- Role badge -->
+      <div class="mb-6">
+        <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold tracking-wide text-emerald-700 border border-emerald-100">
+          ADMIN
+        </span>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <a
+          routerLink="/admin/dashboard"
+          routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h8V3H3v10zm10 8h8V3h-8v18zM3 21h8v-6H3v6z"/>
+          </svg>
+          Vue d'ensemble
+        </a>
+
+        <a
+          routerLink="/admin/claims"
+          routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
+          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Tous les sinistres
+        </a>
+
+        <a
+          routerLink="/admin/review"
+          routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
+          class="flex items-center justify-between px-4 py-3 rounded-2xl border border-transparent text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium"
+        >
+          <span class="flex items-center gap-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Révision humaine
+          </span>
+        </a>
+
+        <a
+          routerLink="/admin/users"
+          routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
+          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5V4H2v16h5m10 0v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2m12 0H7m10-10a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          Gestion utilisateurs
+        </a>
+
+        <a
+          routerLink="/admin/contracts"
+          routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
+          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"/>
+          </svg>
+          Contrats
+        </a>
+      </nav>
+
+      <!-- Bottom user card -->
+      <div class="mt-auto pt-6 border-t border-slate-200">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-11 h-11 rounded-full bg-indigo-100 flex items-center justify-center">
+              <span class="text-sm font-bold text-indigo-700">
+                {{ fullName ? fullName.charAt(0) : 'A' }}
+              </span>
+            </div>
+
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-slate-900 truncate">{{ fullName }}</p>
+              <p class="text-xs text-slate-500">Administrateur</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            (click)="logout()"
+            class="p-2 rounded-xl text-rose-600 hover:bg-rose-50 transition"
+            title="Se déconnecter"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="ml-64 min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200 px-8 py-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-1 text-sm">
+            <span class="text-slate-500">Admin</span>
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-medium text-slate-900">Dashboard</span>
+          </div>
+          <h1 class="text-2xl font-bold text-slate-900">Tableau de bord administrateur</h1>
+        </div>
+
+        <div class="flex items-center gap-3 pl-2">
+          <div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shadow-sm">
+            <span class="text-sm font-bold text-white">
+              {{ fullName ? fullName.charAt(0) : 'A' }}
+            </span>
+          </div>
+
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold text-slate-900">{{ fullName }}</p>
+            <p class="text-xs text-slate-500">Administrateur</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="p-8 space-y-8 bg-slate-50 min-h-screen">
+
+      <!-- Titre -->
+      <section>
+        <h2 class="text-4xl font-bold text-slate-900">Vue d'ensemble</h2>
+        <p class="text-slate-500 mt-2 text-lg">
+          Tableau de bord administrateur — InsureFlow
+        </p>
+      </section>
+
+      <!-- KPI Cards -->
+      <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div *ngFor="let card of overviewCards"
+             class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition">
+          <div class="flex items-start justify-between mb-6">
+            <p class="text-sm uppercase tracking-[0.2em] text-slate-500 font-medium">
+              {{ card.label }}
+            </p>
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center"
+                 [ngClass]="card.iconBg">
+              <svg class="w-5 h-5" [ngClass]="card.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path *ngIf="card.icon === 'folder'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 7a2 2 0 012-2h3l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                <path *ngIf="card.icon === 'warning'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01M10.29 3.86l-7.5 13A1 1 0 003.66 18h16.68a1 1 0 00.87-1.5l-7.5-13a1 1 0 00-1.74 0z" />
+                <path *ngIf="card.icon === 'check'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2A9 9 0 113 12a9 9 0 0118 0z" />
+                <path *ngIf="card.icon === 'x'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12" />
+                <path *ngIf="card.icon === 'cpu'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 3v2m6-2v2m-9 4H4m16 0h-2m-9 10v2m6-2v2m4-9h2M4 15h2m1-8h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z" />
+                <path *ngIf="card.icon === 'shield'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z" />
+                <path *ngIf="card.icon === 'sparkles'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="text-5xl font-bold" [ngClass]="card.valueColor">
+            {{ card.value }}
+          </div>
+        </div>
+      </section>
+
+      <!-- Activité récente -->
+  <!-- Activité récente -->
+<section class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+  <div class="px-8 py-6 border-b border-slate-200 flex items-center justify-between">
+    <h3 class="text-2xl font-bold text-slate-900">Activité récente</h3>
+
+    <a
+      routerLink="/admin/claims"
+      class="text-indigo-600 font-semibold hover:text-indigo-700 transition"
+    >
+      Tout voir →
+    </a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-50">
+        <tr class="text-left">
+          <th class="px-8 py-4 font-semibold text-slate-500 uppercase">Référence</th>
+          <th class="px-8 py-4 font-semibold text-slate-500 uppercase">Type</th>
+          <th class="px-8 py-4 font-semibold text-slate-500 uppercase">Statut</th>
+          <th class="px-8 py-4 font-semibold text-slate-500 uppercase">Score IA</th>
+          <th class="px-8 py-4 font-semibold text-slate-500 uppercase">Fraude</th>
+          <th class="px-8 py-4 font-semibold text-slate-500 uppercase">Date</th>
+          <th class="px-8 py-4 font-semibold text-slate-500 uppercase">Action</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-slate-100">
+        <tr *ngFor="let item of recentActivity" class="hover:bg-slate-50 transition">
+          <td class="px-8 py-5 font-bold text-slate-900">{{ item.reference }}</td>
+          <td class="px-8 py-5 text-slate-600">{{ item.type }}</td>
+
+          <td class="px-8 py-5">
+            <span
+              class="px-4 py-2 rounded-full text-xs font-semibold"
+              [ngClass]="getStatusBadge(item.status)"
+            >
+              {{ item.status }}
+            </span>
+          </td>
+
+          <td class="px-8 py-5 font-semibold" [ngClass]="getScoreText(item.score)">
+            {{ item.score }}
+          </td>
+
+          <td
+            class="px-8 py-5"
+            [ngClass]="item.fraud === '✓' ? 'text-emerald-600 font-bold' : 'text-rose-500 font-medium'"
+          >
+            {{ item.fraud }}
+          </td>
+
+          <td class="px-8 py-5 text-slate-500">{{ item.date }}</td>
+
+          <td class="px-8 py-5">
+            <div class="flex items-center gap-3">
+              <!-- Oeil -> Tous les sinistres -->
+              <a
+                [routerLink]="['/admin/claims']"
+                [queryParams]="{ ref: item.reference }"
+                class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-indigo-700 transition"
+                title="Voir dans tous les sinistres"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </a>
+
+              <!-- Examiner -> Révision humaine -->
+              <a
+                *ngIf="item.action === 'Examiner'"
+                [routerLink]="['/admin/review']"
+                [queryParams]="{ ref: item.reference }"
+                class="px-4 py-2 rounded-full border border-amber-300 bg-amber-50 text-amber-700 font-semibold hover:bg-amber-100 transition"
+              >
+                Examiner
+              </a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+      <!-- Détection fraude -->
+      <section>
+        <h3 class="text-2xl font-bold text-slate-900 mb-6">Détection de fraude</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div *ngFor="let fraud of fraudCards"
+               class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition">
+            <p class="text-sm uppercase tracking-[0.18em] text-slate-500 font-medium mb-5">
+              {{ fraud.label }}
+            </p>
+            <div class="text-5xl font-bold" [ngClass]="fraud.valueColor">
+              {{ fraud.value }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>

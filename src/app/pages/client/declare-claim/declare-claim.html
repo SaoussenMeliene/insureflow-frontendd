@@ -1,0 +1,424 @@
+﻿<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-orange-50">
+  <div class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-indigo-100">
+    <div class="p-6 h-full flex flex-col">
+      <div class="flex items-center gap-3 mb-8">
+        <img src="logo.png" alt="InsureFlow" class="h-10 w-auto object-contain" />
+      </div>
+
+      <nav class="space-y-2">
+        <a routerLink="/client/dashboard" routerLinkActive="bg-indigo-50 text-indigo-700" [routerLinkActiveOptions]="{ exact: true }" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
+          </svg>
+          Tableau de bord
+        </a>
+        <a routerLink="/client/declare" routerLinkActive="bg-indigo-50 text-indigo-700" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m-6-6h12"/>
+          </svg>
+          Déclarer sinistre
+        </a>
+        <a routerLink="/client/contracts" routerLinkActive="bg-indigo-50 text-indigo-700" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Mes contrats
+        </a>
+        <a routerLink="/client/my-claims" routerLinkActive="bg-indigo-50 text-indigo-700" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Mes sinistres
+        </a>
+        <a routerLink="/client/profile" routerLinkActive="bg-indigo-50 text-indigo-700" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          Mon profil
+        </a>
+      </nav>
+
+      <button
+        type="button"
+        (click)="logout()"
+        class="mt-auto flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1"/>
+        </svg>
+        Se déconnecter
+      </button>
+    </div>
+  </div>
+
+  <div class="ml-64 flex-1">
+    <header class="bg-white shadow-sm border-b border-indigo-100 px-8 py-6">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-1 text-sm text-gray-500">
+            <span>Accueil</span>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-medium text-gray-900">Déclarer sinistre</span>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-900">Déclaration de sinistre</h1>
+        </div>
+
+        <div class="flex items-center gap-4">
+         
+
+       
+
+        <!-- image profil -->
+<a routerLink="/client/profile"
+  class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition">
+  <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-indigo-200
+              bg-indigo-100 flex items-center justify-center">
+    <img *ngIf="profileImage"
+      [src]="profileImage"
+      alt="Photo profil"
+      class="w-full h-full object-cover"/>
+    <span *ngIf="!profileImage"
+      class="text-sm font-semibold text-indigo-700">
+      {{ fullName.charAt(0) }}
+    </span>
+  </div>
+  <div class="hidden md:block">
+    <p class="text-sm font-medium text-gray-900">{{ fullName }}</p>
+    <p class="text-xs text-gray-500 capitalize">{{ role.toLowerCase() }}</p>
+  </div>
+</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="p-8">
+      <div class="max-w-7xl mx-auto">
+      <p class="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Nouveau sinistre (FNOL)</p>
+      <h1 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-950">Première notification de sinistre</h1>
+      <p class="mt-2 text-sm text-slate-500">Complétez les informations étape par étape pour déclarer votre sinistre.</p>
+    </div>
+
+    <div class="overflow-hidden rounded-[2rem] bg-white shadow-xl shadow-slate-200/50 border border-slate-200">
+      <div class="p-6 sm:p-8">
+        <div class="mb-8 rounded-[1.75rem] border border-slate-200 bg-slate-50 px-5 py-5">
+          <div class="grid gap-4 sm:grid-cols-4">
+            <ng-container *ngFor="let title of stepTitles; index as i">
+              <div class="flex items-center gap-4">
+                <div class="relative flex h-12 w-12 items-center justify-center rounded-full border text-sm font-semibold transition"
+                     [ngClass]="{
+                       'bg-slate-950 border-slate-950 text-white': currentStep === i + 1,
+                       'bg-indigo-600 border-indigo-600 text-white': currentStep > i + 1,
+                       'bg-white border-slate-200 text-slate-600': currentStep < i + 1
+                     }">
+                  <span *ngIf="currentStep > i + 1">✓</span>
+                  <span *ngIf="currentStep <= i + 1">{{ i + 1 }}</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Étape {{ i + 1 }}</p>
+                  <p class="text-sm font-semibold text-slate-900">{{ title }}</p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <form (ngSubmit)="submitForm()" class="space-y-8">
+          <div *ngIf="currentStep === 1" class="space-y-6">
+            <section class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="mb-6">
+                <h2 class="text-xl font-semibold text-slate-950">Infos contrat</h2>
+                <p class="text-sm text-slate-500 mt-1">Renseignez les informations de police et du sinistre.</p>
+              </div>
+              <div class="grid gap-6 lg:grid-cols-2">
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Numéro de police</span>
+                  <input
+                    type="text"
+                    name="policyNumber"
+                    [(ngModel)]="form.policyNumber"
+                    placeholder="2026500000000"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                  <p *ngIf="submitted && !form.policyNumber.trim()" class="text-sm text-rose-600">Ce champ est requis.</p>
+                </label>
+
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Date de l'accident</span>
+                  <input
+                    type="date"
+                    name="incidentDate"
+                    [(ngModel)]="form.incidentDate"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                  <p *ngIf="submitted && !form.incidentDate" class="text-sm text-rose-600">Ce champ est requis.</p>
+                </label>
+
+                <label class="space-y-3 lg:col-span-2">
+                  <span class="text-sm font-medium text-slate-700">Type de sinistre</span>
+                  <div class="grid grid-cols-2 gap-4 sm:grid-cols-5">
+                    <button
+                      type="button"
+                      *ngFor="let type of claimTypes"
+                      (click)="selectClaimType(type.key)"
+                      [ngClass]="form.claimType === type.key ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm' : 'border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-indigo-50'"
+                      class="rounded-3xl border p-4 text-left transition"
+                    >
+                      <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
+                          <svg *ngIf="type.icon === 'car'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l1.5-4.5h15L21 13m-18 0a1 1 0 001 1h1a1 1 0 001-1m14 0a1 1 0 001 1h1a1 1 0 001-1M7 16h10m-2 0a2 2 0 11-4 0m-4 0a2 2 0 11-4 0"/>
+                          </svg>
+                          <svg *ngIf="type.icon === 'school'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l7-4 7 4m0 0l-7 4-7-4m14 0v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6"/>
+                          </svg>
+                          <svg *ngIf="type.icon === 'house'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-7 9 7v8a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4H9v4a2 2 0 01-2 2H3a2 2 0 01-2-2v-8z"/>
+                          </svg>
+                          <svg *ngIf="type.icon === 'heart'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                          </svg>
+                          <svg *ngIf="type.icon === 'other'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="text-sm font-semibold">{{ type.label }}</p>
+                          <p class="text-xs text-slate-500">{{ type.description }}</p>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                  <p *ngIf="submitted && !form.claimType" class="text-sm text-rose-600">Sélectionnez un type de sinistre.</p>
+                </label>
+
+                <label class="space-y-3 lg:col-span-2">
+                  <span class="text-sm font-medium text-slate-700">Lieu de l'accident</span>
+                  <input
+                    type="text"
+                    name="incidentLocation"
+                    [(ngModel)]="form.incidentLocation"
+                    placeholder="Ville en Tunisie"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                  <p *ngIf="submitted && !form.incidentLocation.trim()" class="text-sm text-rose-600">Ce champ est requis.</p>
+                </label>
+              </div>
+            </section>
+          </div>
+
+          <div *ngIf="currentStep === 2" class="space-y-6">
+            <section class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="mb-6">
+                <h2 class="text-xl font-semibold text-slate-950">Détails sinistre</h2>
+                <p class="text-sm text-slate-500 mt-1">Décrivez le sinistre et ajoutez les informations client.</p>
+              </div>
+              <div class="grid gap-6 lg:grid-cols-2">
+                <label class="space-y-3 lg:col-span-2">
+                  <span class="text-sm font-medium text-slate-700">Description détaillée</span>
+                  <textarea
+                    name="description"
+                    [(ngModel)]="form.description"
+                    placeholder="Décrivez exactement ce qui s'est passé"
+                    rows="6"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 resize-none"
+                  ></textarea>
+                  <p *ngIf="submitted && !form.description.trim()" class="text-sm text-rose-600">Ce champ est requis.</p>
+                </label>
+
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Id client</span>
+                  <input
+                    type="text"
+                    name="clientId"
+                    [(ngModel)]="form.clientId"
+                    placeholder="05739884"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                  <p *ngIf="submitted && !form.clientId.trim()" class="text-sm text-rose-600">Ce champ est requis.</p>
+                </label>
+
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Email du client</span>
+                  <input
+                    type="email"
+                    name="clientEmail"
+                    [(ngModel)]="form.clientEmail"
+                    placeholder="client@email.com"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                  <p *ngIf="submitted && !form.clientEmail.trim()" class="text-sm text-rose-600">Ce champ est requis.</p>
+                </label>
+
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Estimation du client en TND</span>
+                  <input
+                    type="number"
+                    name="clientEstimatedCost"
+                    [(ngModel)]="form.clientEstimatedCost"
+                    placeholder="2500"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                  <p class="text-xs text-slate-500">Utilisé par le FraudAgent pour détecter PRICE_INFLATION</p>
+                </label>
+              </div>
+            </section>
+          </div>
+
+          <div *ngIf="currentStep === 3" class="space-y-6">
+            <section class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="mb-6">
+                <h2 class="text-xl font-semibold text-slate-950">Pièces jointes</h2>
+                <p class="text-sm text-slate-500 mt-1">Ajoutez des photos claires du sinistre.</p>
+              </div>
+              <div
+                class="group rounded-[1.5rem] border-2 border-dashed border-slate-300 bg-slate-50 p-8 text-center transition hover:border-indigo-400 hover:bg-indigo-50/70"
+                (drop)="onDrop($event)"
+                (dragover)="onDragOver($event)"
+              >
+                <p class="text-sm text-slate-600 mb-3">Glissez-déposez vos fichiers ici ou cliquez pour télécharger.</p>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  (change)="onFileChange($event)"
+                  class="mx-auto block cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition focus:outline-none"
+                />
+                <p class="text-xs text-slate-500 mt-3">Formats acceptés : jpg, jpeg, png, webp</p>
+              </div>
+              <p *ngIf="submitted && claimPhotos.length === 0" class="text-sm text-rose-600 mt-3">Vous devez ajouter au moins une photo du sinistre.</p>
+
+              <div *ngIf="previews.length > 0" class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div *ngFor="let preview of previews; let i = index" class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                  <img [src]="preview" alt="Preview photo" class="h-40 w-full object-cover" />
+                  <button
+                    type="button"
+                    (click)="removePhoto(i)"
+                    class="absolute top-3 right-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow hover:bg-white"
+                  >
+                    <span class="text-lg">✕</span>
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="mb-6">
+                <h2 class="text-xl font-semibold text-slate-950">Informations véhicule (optionnel)</h2>
+                <p class="text-sm text-slate-500 mt-1">Complétez ces champs si le sinistre concerne un véhicule.</p>
+              </div>
+              <div class="grid gap-6 lg:grid-cols-2">
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Marque du véhicule</span>
+                  <input
+                    type="text"
+                    name="vehicleBrand"
+                    [(ngModel)]="form.vehicleBrand"
+                    placeholder="Ford, BMW, Renault..."
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                </label>
+
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Modèle du véhicule</span>
+                  <input
+                    type="text"
+                    name="vehicleModel"
+                    [(ngModel)]="form.vehicleModel"
+                    placeholder="Ranger, Série 3, Clio..."
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                </label>
+
+                <label class="space-y-3">
+                  <span class="text-sm font-medium text-slate-700">Année de fabrication</span>
+                  <input
+                    type="number"
+                    name="vehicleYear"
+                    [(ngModel)]="form.vehicleYear"
+                    placeholder="2025"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 placeholder-slate-400 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+                </label>
+
+                <label class="space-y-3 lg:col-span-2">
+                  <span class="text-sm font-medium text-slate-700">Catégorie du véhicule</span>
+                  <select
+                    name="vehicleCategory"
+                    [(ngModel)]="form.vehicleCategory"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  >
+                    <option *ngFor="let category of vehicleCategories" [value]="category.value">{{ category.value }} — {{ category.label }}</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+          </div>
+
+          <div *ngIf="currentStep === 4" class="space-y-6">
+            <section class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="mb-6">
+                <h2 class="text-xl font-semibold text-slate-950">Confirmation</h2>
+                <p class="text-sm text-slate-500 mt-1">Vérifiez les informations avant de soumettre la notification.</p>
+              </div>
+              <div class="grid gap-6 lg:grid-cols-2">
+                <div class="space-y-3">
+                  <p class="text-sm text-slate-500">Police</p>
+                  <p class="text-base font-semibold text-slate-950">{{ form.policyNumber || '-' }}</p>
+                </div>
+                <div class="space-y-3">
+                  <p class="text-sm text-slate-500">Produit</p>
+                  <p class="text-base font-semibold text-slate-950">{{ form.claimType.toLowerCase() }}</p>
+                </div>
+                <div class="space-y-3">
+                  <p class="text-sm text-slate-500">Catégorie</p>
+                  <p class="text-base font-semibold text-slate-950">{{ form.vehicleCategory }}</p>
+                </div>
+                <div class="space-y-3">
+                  <p class="text-sm text-slate-500">Fichiers</p>
+                  <p class="text-base font-semibold text-slate-950">{{ claimPhotos.length }} téléchargé(s)</p>
+                </div>
+                <div class="lg:col-span-2">
+                  <p class="text-sm text-slate-500">Description</p>
+                  <p class="text-base text-slate-950 whitespace-pre-wrap">{{ form.description || '-' }}</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:flex-row sm:justify-between">
+            <button
+              type="button"
+              (click)="prevStep()"
+              [disabled]="currentStep === 1"
+              class="rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Retour
+            </button>
+
+            <div class="flex gap-3 flex-wrap justify-end">
+              <button
+                type="button"
+                *ngIf="currentStep < stepTitles.length"
+                (click)="nextStep()"
+                class="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:bg-slate-800"
+              >
+                Suivant →
+              </button>
+              <button
+                type="submit"
+                *ngIf="currentStep === stepTitles.length"
+                class="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:bg-slate-800"
+              >
+                Soumettre le sinistre
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  </div>
+</div>

@@ -1,0 +1,359 @@
+<div class="min-h-screen bg-white">
+
+  <!-- ── NAVBAR ─────────────────────────────── -->
+  <nav class="fixed top-0 w-full bg-white shadow-sm z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+      <!-- Logo -->
+
+     <div class="px-6 flex items-center  gap-3">
+     <img src="logo.png" 
+       alt="InsureFlow AI" 
+       class="h-10 w-auto object-contain scale-125 transition hover:scale-105">
+  
+     </div>
+      
+
+      <!-- Nav Links -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#accueil" class="text-gray-600 hover:text-primary font-medium transition">Accueil</a>
+        <a href="#fonctionnalites" class="text-gray-600 hover:text-primary font-medium transition">Fonctionnalités</a>
+        <a href="#comment" class="text-gray-600 hover:text-primary font-medium transition">Comment ça marche</a>
+        <a href="#contact" class="text-gray-600 hover:text-primary font-medium transition">Contact</a>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex items-center gap-3">
+        <button (click)="goToLogin()"
+          class="px-5 py-2 text-primary border-2 border-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition">
+          Se connecter
+        </button>
+        <button (click)="goToRegister()"
+          class="px-5 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-indigo-700 transition">
+          S'inscrire
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO ───────────────────────────────── -->
+  <section id="accueil" class="pt-24 pb-16 bg-gradient-to-br from-indigo-50 via-white to-orange-50">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+
+      <!-- Left -->
+      <div class="flex-1">
+        <div class="inline-flex items-center gap-2 bg-indigo-100 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-6">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+          IA AU SERVICE DE L'ASSURANCE
+        </div>
+
+        <h1 class="text-5xl font-extrabold text-gray-900 leading-tight mb-4">
+          L'assurance intelligente.<br>
+          Le traitement des sinistres
+          <span class="text-secondary"> automatisé.</span>
+        </h1>
+
+        <p class="text-lg text-gray-600 mb-8 max-w-xl">
+          InsureFlow AI utilise l'intelligence artificielle pour analyser,
+          valider et traiter vos sinistres rapidement et efficacement
+          grâce aux vrais contrats BNA Assurances.
+        </p>
+
+        <div class="flex gap-4">
+          <button (click)="goToRegister()"
+            class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-indigo-700 transition shadow-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Déclarer un sinistre
+          </button>
+          <button (click)="goToLogin()"
+            class="flex items-center gap-2 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:border-primary hover:text-primary transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Créer un compte
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex items-center gap-4 mt-8">
+          <div class="flex -space-x-2">
+            <div class="w-8 h-8 bg-indigo-400 rounded-full border-2 border-white"></div>
+            <div class="w-8 h-8 bg-orange-400 rounded-full border-2 border-white"></div>
+            <div class="w-8 h-8 bg-green-400 rounded-full border-2 border-white"></div>
+          </div>
+          <span class="text-sm text-gray-600">+10 000 clients nous font déjà confiance</span>
+          <div class="flex text-yellow-400">
+            ★★★★★
+          </div>
+          <span class="text-sm font-semibold">4.8/5</span>
+        </div>
+      </div>
+
+      <!-- Right — Cards flottantes -->
+   <div class="flex-1 relative hidden md:block">
+  <div class="relative h-[500px]">
+
+    <!-- Fond illustration -->
+  <div class="absolute inset-x-6 top-8 bottom-8 rounded-[32px] bg-transparent"></div>
+    <!-- Image principale -->
+    <div class="absolute inset-0 flex items-center justify-center px-8">
+      <img
+        src="family-shield.png"
+        alt="Famille protégée"
+class="w-full h-full object-cover"      />
+    </div>
+
+    <!-- Card 1 -->
+    <div class="absolute top-9 left-3 bg-white rounded-2xl shadow-xl p-4 w-56">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-sm">Analyse intelligente</p>
+          <p class="text-xs text-gray-500">Détection automatique IA</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="absolute top-[240px] left-0 bg-white rounded-2xl shadow-xl p-4 w-56">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-sm">Traitement rapide</p>
+          <p class="text-xs text-gray-500">Sinistres traités en heures</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="absolute top-9 right-5 bg-white rounded-2xl shadow-xl p-4 w-56">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-sm">Données sécurisées</p>
+          <p class="text-xs text-gray-500">Chiffrement JWT avancé</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="absolute bottom-9 right-6 bg-white rounded-2xl shadow-xl p-4 w-56">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-sm">Assistant IA 24/7</p>
+          <p class="text-xs text-gray-500">Disponible à tout moment</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+      
+    </div>
+  </section>
+
+  <!-- ── STATS ──────────────────────────────── -->
+  <section class="py-12 bg-white border-y border-gray-100">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <p class="text-4xl font-extrabold text-primary">+10 000</p>
+        <p class="text-gray-500 mt-1">Sinistres traités</p>
+      </div>
+      <div>
+        <p class="text-4xl font-extrabold text-green-500">95%</p>
+        <p class="text-gray-500 mt-1">Automatisés par l'IA</p>
+      </div>
+      <div>
+        <p class="text-4xl font-extrabold text-secondary">98%</p>
+        <p class="text-gray-500 mt-1">Précision de l'IA</p>
+      </div>
+      <div>
+        <p class="text-4xl font-extrabold text-yellow-500">4.8/5</p>
+        <p class="text-gray-500 mt-1">Satisfaction client</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FONCTIONNALITÉS ────────────────────── -->
+  <section id="fonctionnalites" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900">Pourquoi InsureFlow AI ?</h2>
+        <p class="text-gray-500 mt-2">Une plateforme complète alimentée par l'IA</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Analyse automatique</h3>
+          <p class="text-sm text-gray-500">Notre IA lit et comprend vos documents pour extraire les informations essentielles.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Traitement rapide</h3>
+          <p class="text-sm text-gray-500">Les sinistres simples sont traités automatiquement. Gagnez un temps précieux.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Assistant IA intelligent</h3>
+          <p class="text-sm text-gray-500">Posez vos questions, suivez votre dossier et obtenez des réponses instantanées.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Données sécurisées</h3>
+          <p class="text-sm text-gray-500">Toutes vos données sont chiffrées et stockées en toute sécurité.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COMMENT ÇA MARCHE ──────────────────── -->
+  <section id="comment" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900">Comment ça marche ?</h2>
+        <p class="text-gray-500 mt-2">Un processus simple, alimenté par l'IA</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">1</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Déclarez votre sinistre</h3>
+          <p class="text-sm text-gray-500">Envoyez vos documents (photos, rapports, contrats) en quelques clics.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">2</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Analyse IA</h3>
+          <p class="text-sm text-gray-500">Nos agents IA analysent et extraient les informations clés automatiquement.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">3</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Validation intelligente</h3>
+          <p class="text-sm text-gray-500">L'IA vérifie les contrats et les règles métier grâce à notre base RAG.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">4</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Décision & traitement</h3>
+          <p class="text-sm text-gray-500">Décision automatique ou validation humaine. Vous êtes informé en temps réel.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────── -->
+  <section class="py-20 bg-gradient-to-r from-primary to-indigo-700">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">
+        Prêt à moderniser votre expérience assurance ?
+      </h2>
+      <p class="text-indigo-200 mb-8">
+        Rejoignez des milliers de clients qui font confiance à InsureFlow AI
+      </p>
+      <div class="flex gap-4 justify-center">
+        <button (click)="goToRegister()"
+          class="px-8 py-3 bg-white text-primary rounded-xl font-semibold hover:bg-gray-100 transition">
+          Créer un compte gratuit
+        </button>
+        <button (click)="goToLogin()"
+          class="px-8 py-3 border-2 border-white text-white rounded-xl font-semibold hover:bg-white hover:text-primary transition">
+          Se connecter
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────── -->
+  <footer id="contact" class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+
+        <div>
+          
+            <div class="flex items-center gap-2 mb-4">
+        <img src="logofooter.png" 
+       alt="InsureFlow AI" 
+       class="h-8 w-auto">
+       
+          </div>
+          <p class="text-gray-400 text-sm">
+            Plateforme intelligente de gestion des sinistres d'assurance.
+            
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Liens rapides</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li><a href="#" class="hover:text-white transition">Accueil</a></li>
+            <li><a href="#fonctionnalites" class="hover:text-white transition">Fonctionnalités</a></li>
+            <li><a href="#comment" class="hover:text-white transition">Comment ça marche</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Contact</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li>📍 Cité des Pins, Lac II, Tunis</li>
+            <li>📞 +216 70 026 000</li>
+            <li>✉️ contact&#64;InsureFlow.com</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="border-t border-gray-800 pt-6 text-center text-gray-500 text-sm">
+        © 2026 InsureFlow  —  Tous droits réservés.
+        Développé par Satoripop.
+      </div>
+    </div>
+  </footer>
+
+</div>
