@@ -1,0 +1,455 @@
+{
+  "nav": {
+    "overview":  "Overview",
+    "claims":    "All Claims",
+    "review":    "Human Review",
+    "users":     "User Management",
+    "contracts": "BNA Contracts"
+  },
+  "pipeline": {
+    "title":      "AI Analysis",
+    "subtitle":   "Intelligent processing pipeline",
+    "analyzing":  "Analyzing...",
+    "confirm":    "Launch AI pipeline?",
+    "confirmMsg": "Analyze the claim with the 4 AI agents?",
+    "cancel":     "Cancel",
+    "confirm_btn":"Confirm",
+    "close":      "Close",
+    "agents": {
+      "router":     "Router Agent — Classification",
+      "contract":   "Contract RAG — Contract Validation",
+      "estimation": "Estimation Agent — Cost Calculation",
+      "fraud":      "Fraud Agent — Fraud Detection"
+    },
+    "status": {
+      "COMPLETED":      "Automatically processed",
+      "APPROVED":       "Claim approved",
+      "REJECTED":       "Claim rejected",
+      "HUMAN_REQUIRED": "Human review required"
+    },
+    "fraud": {
+      "none":    "No fraud",
+      "detected":"FRAUD DETECTED",
+      "score":   "Fraud score"
+    },
+    "human": {
+      "title": "Human intervention required",
+      "goto":  "Go to review →"
+    }
+  },
+  "status": {
+    "SUBMITTED":      "Submitted",
+    "COMPLETED":      "Completed",
+    "HUMAN_REQUIRED": "Review",
+    "APPROVED":       "Approved",
+    "REJECTED":       "Rejected"
+  },
+  "fraudTypes": {
+    "PRICE_INFLATION":        "💰 Price inflation",
+    "FAKE_PHOTO":             "📸 Fake photo",
+    "PHOTO_MISMATCH":         "🖼️ Photo mismatch",
+    "PARTS_MISMATCH":         "🔧 Parts mismatch",
+    "PRICE_UNDERESTIMATION":  "📉 Price underestimation",
+    "INTERNAL_INCONSISTENCY": "⚠️ Internal inconsistency",
+    "DESCRIPTION_MISMATCH":   "📝 Description mismatch",
+    "NO_FRAUD":               "✓ No fraud"
+  },
+  "auth": {
+    "logout": "Logout",
+    "admin":  "Administrator"
+  },
+  "admin": {
+    "dashboard": {
+      "title":          "Administrator dashboard",
+      "breadcrumb":     "Dashboard",
+      "overview":       "Overview",
+      "subtitle":       "Administrator dashboard — InsureFlow",
+      "recentActivity": "Recent activity",
+      "viewAll":        "View all",
+      "fraudDetection": "Fraud detection",
+      "table": {
+        "reference":  "Reference",
+        "type":       "Type",
+        "status":     "Status",
+        "aiScore":    "AI Score",
+        "fraud":      "Fraud",
+        "date":       "Date",
+        "action":     "Action",
+        "viewClaims": "View in all claims",
+        "examine":    "Examine"
+      },
+      "cards": {
+        "totalClaims":    "Total claims",
+        "pendingReview":  "Pending review",
+        "approved":       "Approved",
+        "rejected":       "Rejected",
+        "automationRate": "Automation rate",
+        "fraudsDetected": "Frauds detected",
+        "avgScore":       "Average AI score"
+      },
+      "fraud": {
+        "noFraud":               "No fraud",
+        "priceInflation":        "Price inflation",
+        "descMismatch":          "Description mismatch",
+        "internalInconsistency": "Internal inconsistency",
+        "generic":               "Fraud"
+      }
+    },
+    "claims": {
+      "title":        "All Claims",
+      "search":       "Search by reference or description...",
+      "filterType":   "All types",
+      "filterStatus": "All statuses",
+      "found":        "claim(s) found",
+      "noResults":    "No claims found",
+      "loading":      "Loading...",
+      "waiting":      "Waiting...",
+      "anomalyDetected": "Anomaly detected by the AI system",
+      "columns": {
+        "id":          "ID",
+        "reference":   "Reference",
+        "policy":      "Policy",
+        "type":        "Type",
+        "description": "Description",
+        "estimation":  "Client Est.",
+        "status":      "Status",
+        "date":        "Date",
+        "actions":     "Actions"
+      },
+      "actions": {
+        "analyze":  "Analyze",
+        "pipeline": "Pipeline"
+      },
+      "claimTypes": {
+       "AUTO":     "Automobile",
+       "HOME":     "Home",
+      "SCOLAIRE": "School",
+      "HEALTH": "Health",
+       "OTHER":  "Other"
+    }
+
+    },
+    "review": {
+  "title":   "Administrator dashboard",
+  "heading": "Human review",
+  "subtitle":"Cases requiring administrator intervention",
+  "empty":   "No pending cases",
+  "tabs": {
+    "pending": "Pending",
+    "all":     "All cases"
+  },
+  "stats": {
+    "pending":       "Total pending",
+    "suspectedFraud":"Suspected frauds",
+    "avgScore":      "Average score"
+  },
+  "card": {
+    "suspectedFraud":"Suspected fraud",
+    "reviewRequired":"Review required",
+    "aiScore":       "AI Score",
+    "examine":       "Examine case"
+  },
+  "modal": {
+    "claimInfo":           "Claim information",
+    "policy":              "Policy",
+    "location":            "Location",
+    "brand":               "Brand",
+    "model":               "Model",
+    "year":                "Year",
+    "description":         "Description",
+    "photos":              "Claim photos",
+    "noPhotos":            "No photos available",
+    "aiResult":            "AI Result",
+    "reviewReason":        "Review reason",
+    "contractRag":         "Contract RAG",
+    "estimation":          "Estimation",
+    "fraudDetected":       "Fraud detected",
+    "fraudScore":          "Fraud score",
+    "decision":            "Admin decision",
+    "comment":             "Comment (optional)",
+    "commentPlaceholder":  "Reviewer notes...",
+    "rejectionMotif":      "Rejection reason",
+    "requiredIfRejected":  "required if rejected",
+    "rejectionPlaceholder":"Ex: Proven fraud, insufficient documents...",
+    "approve":             "✔ APPROVE",
+    "reject":              "✖ REJECT"
+  }
+},
+"users": {
+  "title":       "User Management",
+  "heading":     "User Management",
+  "subtitle":    "Client and administrator accounts",
+  "loading":     "Loading users...",
+  "empty":       "No users found",
+  "search":      "Search by name or email...",
+  "allStatuses": "All statuses",
+  "statusActive":"Active",
+  "statusInactive":"Inactive",
+  "stats": {
+    "total":         "Total",
+    "activeClients": "Active clients",
+    "admins":        "Admins",
+    "inactive":      "Inactive"
+  },
+  "cols": {
+    "id":       "ID",
+    "name":     "Name",
+    "email":    "Email",
+    "role":     "Role",
+    "status":   "Status",
+    "joinDate": "Join date",
+    "actions":  "Actions"
+  },
+  "actions": {
+    "view":       "View",
+    "deactivate": "Deactivate",
+    "activate":   "Activate"
+  },
+  "modal": { "title": "User profile" },
+  "confirm": {
+    "title":             "Confirmation",
+    "message":           "Do you really want to",
+    "theUser":           "the user",
+    "cancel":            "Cancel",
+    "confirmDeactivate": "Confirm deactivation",
+    "confirmActivate":   "Confirm activation"
+  }
+},"contracts": {
+  "title":          "BNA Contracts",
+  "heading":        "BNA Contracts",
+  "subtitle":       "Insurance policies used by the RAG engine",
+  "reindexBtn":     "Reindex AI contracts",
+  "stopBtn":        "Stop reindexing",
+  "reindexSuccess": "chunks reindexed successfully!",
+  "reindexError":   "Error during reindexing",
+  "guarantees":     "Guarantees",
+  "annualPremium":  "Annual premium",
+  "auto": {
+    "badge":       "AUTO Contract",
+    "name":        "Business & Leisure",
+    "vehicle":     "Vehicle",
+    "marketValue": "Market value"
+  },
+  "school": {
+    "badge":    "SCHOOL Contract",
+    "name":     "Madrassati",
+    "school":   "School",
+    "students": "students"
+  }
+}
+  },
+  "client": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "declare":   "File a claim",
+      "contracts": "My contracts",
+      "claims":    "My claims",
+      "profile":   "My profile",
+      "logout":    "Sign out"
+    },
+    "breadcrumb": {
+      "home":      "Home",
+      "dashboard": "Dashboard"
+    },
+    "dashboard": {
+      "welcome": "Welcome,"
+    },
+    "stats": {
+      "declared": "Filed claims",
+      "pending":  "Pending",
+      "inReview": "In review",
+      "approved": "Approved"
+    },
+    "portfolio": {
+      "title":    "Insurance portfolio",
+      "AUTO":     "Automobile",
+      "HOME":     "Home",
+      "HEALTH":   "Health",
+      "SCOLAIRE": "School",
+      "OTHER":    "Other"
+    },
+    "quickActions": {
+      "title":    "Quick actions",
+      "declare":  "File a claim",
+      "claims":   "My claims",
+      "contracts":"My contracts",
+      "profile":  "My profile"
+    },
+    "notifications": {
+      "title":    "Notifications",
+      "clearAll": "Clear all",
+      "empty":    "No notifications"
+    },
+    "recentClaims": {
+      "title": "Recent claims",
+      "empty": "No claims filed yet",
+      "cols": {
+        "id":     "ID",
+        "type":   "Type",
+        "status": "Status",
+        "date":   "Date",
+        "amount": "Amount"
+      }
+    },
+    "claimTypes": {
+      "AUTO":     "Automobile",
+      "HOME":     "Home",
+      "HEALTH":   "Health",
+      "SCOLAIRE": "School",
+      "OTHER":    "Other"
+    },
+    "status": {
+      "SUBMITTED":      "Submitted",
+      "COMPLETED":      "Completed",
+      "HUMAN_REQUIRED": "In review",
+      "APPROVED":       "Approved",
+      "REJECTED":       "Rejected"
+    },
+    "claims": {
+      "found": "claim(s) found"
+    },
+    "myClaims": {
+      "title":     "My claims",
+      "subtitle":  "Manage and track your claim declarations",
+      "new":       "+ New claim",
+      "loading":   "Loading claims...",
+      "empty":     "No claims found",
+      "emptyHint": "Try adjusting your filters or file a new claim.",
+      "allStatus": "All statuses",
+      "search":    "Search by reference, type or description...",
+      "cols": {
+        "reference": "Reference",
+        "type":      "Type",
+        "date":      "Incident date",
+        "amount":    "Estimated amount",
+        "location":  "Location",
+        "status":    "Status"
+      }
+    },
+    "declare": {
+      "title":      "Claim declaration",
+      "fnol":       "New claim (FNOL)",
+      "heading":    "First Notice of Loss",
+      "subheading": "Complete the information step by step.",
+      "step":       "Step",
+      "required":   "This field is required.",
+      "selectType": "Please select a claim type.",
+      "back":       "Back",
+      "next":       "Next →",
+      "submit":     "Submit claim",
+      "step1": {
+        "title":              "Contract info",
+        "subtitle":           "Enter your policy information.",
+        "policy":             "Policy number",
+        "policyPlaceholder":  "2026500000000",
+        "date":               "Incident date",
+        "claimType":          "Claim type",
+        "location":           "Incident location",
+        "locationPlaceholder":"City in Tunisia"
+      },
+      "step2": {
+        "title":                 "Claim details",
+        "subtitle":              "Describe the claim.",
+        "description":           "Detailed description",
+        "descriptionPlaceholder":"Describe exactly what happened",
+        "clientId":              "Client ID",
+        "clientEmail":           "Client email",
+        "estimation":            "Client estimation in TND",
+        "estimationHint":        "Used by FraudAgent to detect PRICE_INFLATION"
+      },
+      "step3": {
+        "title":           "Attachments",
+        "subtitle":        "Add clear photos of the damage.",
+        "dropzone":        "Drag and drop files here or click to upload.",
+        "formats":         "Accepted formats: jpg, jpeg, png, webp",
+        "required":        "You must add at least one photo.",
+        "vehicleTitle":    "Vehicle information (optional)",
+        "vehicleSubtitle": "Complete if the claim involves a vehicle.",
+        "brand":           "Vehicle brand",
+        "brandPlaceholder":"Ford, BMW, Renault...",
+        "model":           "Vehicle model",
+        "modelPlaceholder":"Ranger, Series 3, Clio...",
+        "year":            "Year of manufacture",
+        "category":        "Vehicle category"
+      },
+      "step4": {
+        "title":    "Confirmation",
+        "subtitle": "Review information before submitting.",
+        "files":    "uploaded"
+      }
+    },
+    "profile": {
+      "title":                     "My profile",
+      "subtitle":                  "Manage your personal information and password.",
+      "fullName":                  "Full name",
+      "fullNamePlaceholder":       "Enter your full name",
+      "email":                     "Email",
+      "emailPlaceholder":          "Enter your email",
+      "role":                      "Role",
+      "edit":                      "Edit",
+      "cancel":                    "Cancel",
+      "save":                      "Save",
+      "changePhoto":               "Change photo",
+      "changePassword":            "Change password",
+      "passwordSubtitle":          "Choose a secure password to protect your account.",
+      "currentPassword":           "Current password",
+      "currentPasswordPlaceholder":"Enter your current password",
+      "newPassword":               "New password",
+      "newPasswordPlaceholder":    "Enter your new password"
+    },
+    "contracts": {
+      "title":    "My contracts",
+      "subtitle": "Manage and view all your insurance contracts in one place.",
+      "stats": {
+        "active":       "Active contracts",
+        "totalPremium": "Total annual premium",
+        "totalClaims":  "Claims filed"
+      },
+      "card": {
+        "premium":       "Premium",
+        "year":          "yr",
+        "deductible":    "Deductible",
+        "ceiling":       "Coverage limit",
+        "validFrom":     "Valid from",
+        "to":            "to",
+        "claimsDeclared":"Claims filed",
+        "nextPayment":   "Next payment",
+        "viewDetails":   "View details"
+      },
+      "modal": {
+        "holder":     "Contract holder",
+        "name":       "Name",
+        "email":      "Email",
+        "address":    "Address",
+        "guarantees": "Included guarantees",
+        "payment":    "Payment",
+        "method":     "Method",
+        "from":       "From"
+      }
+    }
+  },
+  "mobile": {
+    "login": {
+      "badge":    "AI FOR INSURANCE",
+      "title":    "Next generation insurance,",
+      "subtitle": "powered by AI",
+      "welcome":  "Welcome",
+      "email":    "Email",
+      "password": "Password",
+      "signin":   "Sign in",
+      "loading":  "Signing in..."
+    },
+    "profile": {
+      "title":  "My profile",
+      "role":   "Role",
+      "email":  "Email",
+      "logout": "Logout"
+    },
+    "claims": {
+      "title":  "My claims",
+      "new":    "New claim",
+      "status": "Status",
+      "date":   "Date"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { FirebaseNotificationService } from '../../../core/services/firebase.service';
 
 @Component({
   selector: 'app-login-callback',
@@ -18,12 +19,18 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class LoginCallbackComponent implements OnInit {
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private firebaseService: FirebaseNotificationService  // ← AJOUTER
+  ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // ✅ Récupère user depuis token Keycloak
     const user = this.authService.getUser();
     console.log('User Keycloak :', user);
+
+    // ✅ Init FCM après login
+    await this.firebaseService.initNotifications();
 
     // ✅ Redirige selon le rôle
     this.authService.redirectByRole();

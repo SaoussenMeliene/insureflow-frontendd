@@ -1,0 +1,493 @@
+{
+  "nav": {
+    "overview":  "Vue d'ensemble",
+    "claims":    "Tous les sinistres",
+    "review":    "Révision humaine",
+    "users":     "Gestion utilisateurs",
+    "contracts": "Contrats BNA"
+  },
+  "pipeline": {
+    "title":      "Analyse IA",
+    "subtitle":   "Pipeline de traitement intelligent",
+    "analyzing":  "Analyse en cours...",
+    "confirm":    "Lancer le pipeline IA ?",
+    "confirmMsg": "Analyser le sinistre avec les 4 agents IA ?",
+    "cancel":     "Annuler",
+    "confirm_btn":"Confirmer",
+    "close":      "Fermer",
+    "agents": {
+      "router":     "Router Agent — Classification",
+      "contract":   "Contract RAG — Validation contrat",
+      "estimation": "Estimation Agent — Calcul coût",
+      "fraud":      "Fraud Agent — Détection fraude"
+    },
+    "status": {
+      "COMPLETED":      "Traitement automatique terminé",
+      "APPROVED":       "Sinistre approuvé",
+      "REJECTED":       "Sinistre rejeté",
+      "HUMAN_REQUIRED": "Révision humaine requise"
+    },
+    "fraud": {
+      "none":    "Aucune fraude",
+      "detected":"FRAUDE DÉTECTÉE",
+      "score":   "Score fraude"
+    },
+    "human": {
+      "title": "Intervention humaine requise",
+      "goto":  "Aller vers la révision →"
+    }
+  },
+  "status": {
+    "SUBMITTED":      "Soumis",
+    "COMPLETED":      "Complété",
+    "HUMAN_REQUIRED": "Révision",
+    "APPROVED":       "Approuvé",
+    "REJECTED":       "Rejeté"
+  },
+  "fraudTypes": {
+    "PRICE_INFLATION":        "💰 Inflation de prix",
+    "FAKE_PHOTO":             "📸 Fausse photo",
+    "PHOTO_MISMATCH":         "🖼️ Photo incohérente",
+    "PARTS_MISMATCH":         "🔧 Pièces incorrectes",
+    "PRICE_UNDERESTIMATION":  "📉 Sous-estimation prix",
+    "INTERNAL_INCONSISTENCY": "⚠️ Incohérence interne",
+    "DESCRIPTION_MISMATCH":   "📝 Description incorrecte",
+    "NO_FRAUD":               "✓ Aucune fraude"
+  },
+  "auth": {
+    "logout": "Déconnexion",
+    "admin":  "Administrateur"
+  },
+  "admin": {
+    "dashboard": {
+      "title":          "Tableau de bord administrateur",
+      "breadcrumb":     "Tableau de bord",
+      "overview":       "Vue d'ensemble",
+      "subtitle":       "Tableau de bord administrateur — InsureFlow",
+      "recentActivity": "Activité récente",
+      "viewAll":        "Tout voir",
+      "fraudDetection": "Détection de fraude",
+      "table": {
+        "reference":  "Référence",
+        "type":       "Type",
+        "status":     "Statut",
+        "aiScore":    "Score IA",
+        "fraud":      "Fraude",
+        "date":       "Date",
+        "action":     "Action",
+        "viewClaims": "Voir dans tous les sinistres",
+        "examine":    "Examiner"
+      },
+      "cards": {
+        "totalClaims":    "Total sinistres",
+        "pendingReview":  "En attente révision",
+        "approved":       "Approuvés",
+        "rejected":       "Rejetés",
+        "automationRate": "Taux automatisation",
+        "fraudsDetected": "Fraudes détectées",
+        "avgScore":       "Score IA moyen"
+      },
+      "fraud": {
+        "noFraud":               "Aucune fraude",
+        "priceInflation":        "Inflation de prix",
+        "descMismatch":          "Description incohérente",
+        "internalInconsistency": "Incohérence interne",
+        "generic":               "Fraude détectée"
+      }
+    },
+    "claims": {
+      "title":        "Tous les sinistres",
+      "search":       "Rechercher par référence ou description...",
+      "filterType":   "Tous les types",
+      "filterStatus": "Tous les statuts",
+      "found":        "sinistre(s) trouvé(s)",
+      "noResults":    "Aucun sinistre trouvé",
+      "loading":      "Chargement...",
+      "waiting":      "En attente...",
+      "anomalyDetected": "Anomalie détectée par le système IA",
+      "columns": {
+        "id":          "ID",
+        "reference":   "Référence",
+        "policy":      "Police",
+        "type":        "Type",
+        "description": "Description",
+        "estimation":  "Estim. client",
+        "status":      "Statut",
+        "date":        "Date",
+        "actions":     "Actions"
+      },
+      "actions": {
+        "analyze":  "Analyser",
+        "pipeline": "Pipeline"
+      },"claimTypes": {
+  "AUTO":     "Automobile",
+  "HOME":     "Habitation",
+  "SCOLAIRE": "Scolaire",
+  "HEALTH": "Santé",
+"OTHER":  "Autre"
+}
+    },
+    "review": {
+  "title":   "Tableau de bord administrateur",
+  "heading": "Révision humaine",
+  "subtitle":"Dossiers nécessitant l'intervention d'un administrateur",
+  "empty":   "Aucun dossier en attente",
+  "tabs": {
+    "pending": "En attente",
+    "all":     "Tous les dossiers"
+  },
+  "stats": {
+    "pending":       "Total en attente",
+    "suspectedFraud":"Fraudes suspectées",
+    "avgScore":      "Score moyen"
+  },
+  "card": {
+    "suspectedFraud":"Fraude suspectée",
+    "reviewRequired":"Révision requise",
+    "aiScore":       "Score IA",
+    "examine":       "Examiner le dossier"
+  },
+  "modal": {
+    "claimInfo":           "Informations sinistre",
+    "policy":              "Police",
+    "location":            "Lieu",
+    "brand":               "Marque",
+    "model":               "Modèle",
+    "year":                "Année",
+    "description":         "Description",
+    "photos":              "Photos du sinistre",
+    "noPhotos":            "Aucune photo disponible",
+    "aiResult":            "Résultat IA",
+    "reviewReason":        "Raison de révision",
+    "contractRag":         "Contrat RAG",
+    "estimation":          "Estimation",
+    "fraudDetected":       "Fraude détectée",
+    "fraudScore":          "Score fraude",
+    "decision":            "Décision admin",
+    "comment":             "Commentaire (optionnel)",
+    "commentPlaceholder":  "Notes du réviseur...",
+    "rejectionMotif":      "Motif de rejet",
+    "requiredIfRejected":  "obligatoire si rejet",
+    "rejectionPlaceholder":"Ex: Fraude avérée, documents insuffisants...",
+    "approve":             "✔ APPROUVER",
+    "reject":              "✖ REJETER"
+  }
+},"users": {
+  "title":       "Gestion utilisateurs",
+  "heading":     "Gestion utilisateurs",
+  "subtitle":    "Comptes clients et administrateurs",
+  "loading":     "Chargement des utilisateurs...",
+  "empty":       "Aucun utilisateur trouvé",
+  "search":      "Rechercher par nom ou email...",
+  "allStatuses": "Tous statuts",
+  "statusActive":"Actif",
+  "statusInactive":"Inactif",
+  "stats": {
+    "total":         "Total",
+    "activeClients": "Clients actifs",
+    "admins":        "Admins",
+    "inactive":      "Inactifs"
+  },
+  "cols": {
+    "id":       "ID",
+    "name":     "Nom",
+    "email":    "Email",
+    "role":     "Rôle",
+    "status":   "Statut",
+    "joinDate": "Date inscription",
+    "actions":  "Actions"
+  },
+  "actions": {
+    "view":       "Voir",
+    "deactivate": "Désactiver",
+    "activate":   "Activer"
+  },
+  "modal": { "title": "Profil utilisateur" },
+  "confirm": {
+    "title":             "Confirmation",
+    "message":           "Voulez-vous vraiment",
+    "theUser":           "l'utilisateur",
+    "cancel":            "Annuler",
+    "confirmDeactivate": "Confirmer la désactivation",
+    "confirmActivate":   "Confirmer l'activation"
+  }
+},
+"users": {
+  "title":       "Gestion utilisateurs",
+  "heading":     "Gestion utilisateurs",
+  "subtitle":    "Comptes clients et administrateurs",
+  "loading":     "Chargement des utilisateurs...",
+  "empty":       "Aucun utilisateur trouvé",
+  "search":      "Rechercher par nom ou email...",
+  "allStatuses": "Tous statuts",
+  "statusActive":"Actif",
+  "statusInactive":"Inactif",
+  "stats": {
+    "total":         "Total",
+    "activeClients": "Clients actifs",
+    "admins":        "Admins",
+    "inactive":      "Inactifs"
+  },
+  "cols": {
+    "id":       "ID",
+    "name":     "Nom",
+    "email":    "Email",
+    "role":     "Rôle",
+    "status":   "Statut",
+    "joinDate": "Date inscription",
+    "actions":  "Actions"
+  },
+  "actions": {
+    "view":       "Voir",
+    "deactivate": "Désactiver",
+    "activate":   "Activer"
+  },
+  "modal": { "title": "Profil utilisateur" },
+  "confirm": {
+    "title":             "Confirmation",
+    "message":           "Voulez-vous vraiment",
+    "theUser":           "l'utilisateur",
+    "cancel":            "Annuler",
+    "confirmDeactivate": "Confirmer la désactivation",
+    "confirmActivate":   "Confirmer l'activation"
+  }
+},
+"contracts": {
+  "title":          "Contrats BNA",
+  "heading":        "Contrats BNA",
+  "subtitle":       "Polices d'assurance utilisées par le moteur RAG",
+  "reindexBtn":     "Réindexer les contrats IA",
+  "stopBtn":        "Arrêter la réindexation",
+  "reindexSuccess": "chunks réindexés avec succès !",
+  "reindexError":   "Erreur lors de la réindexation",
+  "guarantees":     "Garanties",
+  "annualPremium":  "Prime annuelle",
+  "auto": {
+    "badge":       "Contrat AUTO",
+    "name":        "Affaires et Promenades",
+    "vehicle":     "Véhicule",
+    "marketValue": "Valeur vénale"
+  },
+  "school": {
+    "badge":    "Contrat SCOLAIRE",
+    "name":     "Madrassati",
+    "school":   "École",
+    "students": "élèves"
+  }
+}
+  },
+  "client": {
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "declare":   "Déclarer sinistre",
+      "contracts": "Mes contrats",
+      "claims":    "Mes sinistres",
+      "profile":   "Mon profil",
+      "logout":    "Se déconnecter"
+    },
+    "breadcrumb": {
+      "home":      "Accueil",
+      "dashboard": "Tableau de bord"
+    },
+    "dashboard": {
+      "welcome": "Bienvenue,"
+    },
+    "stats": {
+      "declared": "Sinistres déclarés",
+      "pending":  "En attente",
+      "inReview": "En révision",
+      "approved": "Approuvés"
+    },
+    "portfolio": {
+      "title":    "Portefeuille d'assurance",
+      "AUTO":     "Automobile",
+      "HOME":     "Habitation",
+      "HEALTH":   "Santé",
+      "SCOLAIRE": "Scolaire",
+      "OTHER":    "Autres"
+    },
+    "quickActions": {
+      "title":    "Actions rapides",
+      "declare":  "Déclarer un sinistre",
+      "claims":   "Mes sinistres",
+      "contracts":"Mes contrats",
+      "profile":  "Mon profil"
+    },
+    "notifications": {
+      "title":    "Notifications",
+      "clearAll": "Tout effacer",
+      "empty":    "Aucune notification"
+    },
+    "recentClaims": {
+      "title": "Sinistres récents",
+      "empty": "Aucun sinistre déclaré pour le moment",
+      "cols": {
+        "id":     "ID",
+        "type":   "Type",
+        "status": "Statut",
+        "date":   "Date",
+        "amount": "Montant"
+      }
+    },
+    "claimTypes": {
+      "AUTO":     "Automobile",
+      "HOME":     "Habitation",
+      "HEALTH":   "Santé",
+      "SCOLAIRE": "Scolaire",
+      "OTHER":    "Autre"
+    },
+    "status": {
+      "SUBMITTED":      "Soumis",
+      "COMPLETED":      "Complété",
+      "HUMAN_REQUIRED": "En révision",
+      "APPROVED":       "Approuvé",
+      "REJECTED":       "Rejeté"
+    },
+    "claims": {
+      "found": "sinistre(s) trouvé(s)"
+    },
+    "myClaims": {
+      "title":     "Mes sinistres",
+      "subtitle":  "Gérez et suivez vos déclarations de sinistre",
+      "new":       "+ Nouveau sinistre",
+      "loading":   "Chargement des sinistres...",
+      "empty":     "Aucun sinistre trouvé",
+      "emptyHint": "Essayez d'ajuster vos critères ou déclarez un nouveau sinistre.",
+      "allStatus": "Tous les statuts",
+      "search":    "Rechercher par référence, type ou description...",
+      "cols": {
+        "reference": "Référence",
+        "type":      "Type",
+        "date":      "Date incident",
+        "amount":    "Montant estimé",
+        "location":  "Lieu",
+        "status":    "Statut"
+      }
+    },
+    "declare": {
+      "title":      "Déclaration de sinistre",
+      "fnol":       "Nouveau sinistre (FNOL)",
+      "heading":    "Première notification de sinistre",
+      "subheading": "Complétez les informations étape par étape.",
+      "step":       "Étape",
+      "required":   "Ce champ est requis.",
+      "selectType": "Sélectionnez un type de sinistre.",
+      "back":       "Retour",
+      "next":       "Suivant →",
+      "submit":     "Soumettre le sinistre",
+      "step1": {
+        "title":              "Infos contrat",
+        "subtitle":           "Renseignez les informations de police.",
+        "policy":             "Numéro de police",
+        "policyPlaceholder":  "2026500000000",
+        "date":               "Date de l'accident",
+        "claimType":          "Type de sinistre",
+        "location":           "Lieu de l'accident",
+        "locationPlaceholder":"Ville en Tunisie"
+      },
+      "step2": {
+        "title":                "Détails sinistre",
+        "subtitle":             "Décrivez le sinistre.",
+        "description":          "Description détaillée",
+        "descriptionPlaceholder":"Décrivez exactement ce qui s'est passé",
+        "clientId":             "Id client",
+        "clientEmail":          "Email du client",
+        "estimation":           "Estimation client en TND",
+        "estimationHint":       "Utilisé par le FraudAgent pour détecter PRICE_INFLATION"
+      },
+      "step3": {
+        "title":           "Pièces jointes",
+        "subtitle":        "Ajoutez des photos claires du sinistre.",
+        "dropzone":        "Glissez-déposez vos fichiers ici ou cliquez pour télécharger.",
+        "formats":         "Formats acceptés : jpg, jpeg, png, webp",
+        "required":        "Vous devez ajouter au moins une photo.",
+        "vehicleTitle":    "Informations véhicule (optionnel)",
+        "vehicleSubtitle": "Complétez si le sinistre concerne un véhicule.",
+        "brand":           "Marque du véhicule",
+        "brandPlaceholder":"Ford, BMW, Renault...",
+        "model":           "Modèle du véhicule",
+        "modelPlaceholder":"Ranger, Série 3, Clio...",
+        "year":            "Année de fabrication",
+        "category":        "Catégorie du véhicule"
+      },
+      "step4": {
+        "title":    "Confirmation",
+        "subtitle": "Vérifiez les informations avant de soumettre.",
+        "files":    "téléchargé(s)"
+      }
+    },
+    "profile": {
+      "title":                     "Mon profil",
+      "subtitle":                  "Gérez vos informations personnelles et votre mot de passe.",
+      "fullName":                  "Nom complet",
+      "fullNamePlaceholder":       "Entrez votre nom complet",
+      "email":                     "Email",
+      "emailPlaceholder":          "Entrez votre email",
+      "role":                      "Rôle",
+      "edit":                      "Modifier",
+      "cancel":                    "Annuler",
+      "save":                      "Enregistrer",
+      "changePhoto":               "Changer la photo",
+      "changePassword":            "Changer mot de passe",
+      "passwordSubtitle":          "Choisissez un mot de passe sécurisé.",
+      "currentPassword":           "Mot de passe actuel",
+      "currentPasswordPlaceholder":"Entrez votre mot de passe actuel",
+      "newPassword":               "Nouveau mot de passe",
+      "newPasswordPlaceholder":    "Entrez votre nouveau mot de passe"
+    },
+    "contracts": {
+      "title":    "Mes contrats",
+      "subtitle": "Gérez et consultez vos contrats d'assurance en un seul endroit.",
+      "stats": {
+        "active":       "Contrats actifs",
+        "totalPremium": "Prime annuelle totale",
+        "totalClaims":  "Sinistres déclarés"
+      },
+      "card": {
+        "premium":       "Prime",
+        "year":          "an",
+        "deductible":    "Franchise",
+        "ceiling":       "Plafond",
+        "validFrom":     "Valide du",
+        "to":            "au",
+        "claimsDeclared":"Sinistres déclarés",
+        "nextPayment":   "Prochain paiement",
+        "viewDetails":   "Voir les détails"
+      },
+      "modal": {
+        "holder":     "Titulaire du contrat",
+        "name":       "Nom",
+        "email":      "Email",
+        "address":    "Adresse",
+        "guarantees": "Garanties incluses",
+        "payment":    "Paiement",
+        "method":     "Méthode",
+        "from":       "Du"
+      }
+    }
+  },
+  "mobile": {
+    "login": {
+      "badge":    "IA AU SERVICE DE L'ASSURANCE",
+      "title":    "L'assurance nouvelle génération,",
+      "subtitle": "propulsée par l'IA",
+      "welcome":  "Bienvenue",
+      "email":    "Email",
+      "password": "Mot de passe",
+      "signin":   "Se connecter",
+      "loading":  "Connexion..."
+    },
+    "profile": {
+      "title":  "Mon profil",
+      "role":   "Rôle",
+      "email":  "Email",
+      "logout": "Déconnexion"
+    },
+    "claims": {
+      "title":  "Mes sinistres",
+      "new":    "Nouveau sinistre",
+      "status": "Statut",
+      "date":   "Date"
+    }
+  }
+}

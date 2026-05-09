@@ -1,75 +1,87 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { ChangeDetectorRef } from '@angular/core';
+import { FirebaseNotificationService } from '../../../core/services/firebase.service';
+import { Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';                              // ← AJOUTER
+import { LanguageService } from '../../../core/services/language.service';           // ← AJOUTER
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],  // ← AJOUTER TranslateModule
   templateUrl: './dashboard.html',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   fullName     = '';
   role         = '';
   profileImage = '';
   isLoading    = true;
   recentClaims: any[] = [];
 
+  notifCount     = 0;
+  notifications: any[] = [];
+  showNotifPanel = false;
+  private notifSub?: Subscription;
+
   stats = [
-    { title: 'Sinistres déclarés',      value: 0, bgClass: 'bg-blue-100',   iconClass: 'text-blue-600',   icon: 'clipboard-list' },
-    { title: 'En attente de révision',  value: 0, bgClass: 'bg-yellow-100', iconClass: 'text-yellow-600', icon: 'clock' },
-    { title: 'Approuvés',               value: 0, bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'document-check' }
+    { title: 'Sinistres déclarés', value: 0, bgClass: 'bg-blue-100',   iconClass: 'text-blue-600',   icon: 'clipboard-list' },
+    { title: 'En attente',         value: 0, bgClass: 'bg-yellow-100', iconClass: 'text-yellow-600', icon: 'clock' },
+    { title: 'En révision',        value: 0, bgClass: 'bg-orange-100', iconClass: 'text-orange-600', icon: 'clock' },
+    { title: 'Approuvés',          value: 0, bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'document-check' }
   ];
 
   contracts = [
-    { type: 'Automobile', count: 0, bgClass: 'bg-red-100',    iconClass: 'text-red-600',    icon: 'car' },
-    { type: 'Habitation', count: 0, bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'house' },
-    { type: 'Santé',      count: 0, bgClass: 'bg-pink-100',   iconClass: 'text-pink-600',   icon: 'heart' },
-    { type: 'Autres',     count: 0, bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' }
+    { type: 'Automobile', typeKey: 'AUTO',     count: 0, bgClass: 'bg-red-100',    iconClass: 'text-red-600',    icon: 'car' },
+    { type: 'Habitation', typeKey: 'HOME',     count: 0, bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'house' },
+    { type: 'Santé',      typeKey: 'HEALTH',   count: 0, bgClass: 'bg-pink-100',   iconClass: 'text-pink-600',   icon: 'heart' },
+    { type: 'Autres',     typeKey: 'OTHER',    count: 0, bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' }
   ];
 
   quickActions = [
-    { title: 'Déclarer un sinistre', icon: 'plus-circle',    action: 'declare-claim' },
-    { title: 'Mes sinistres',        icon: 'clipboard-list', action: 'my-claims' },
-    { title: 'Mes contrats',         icon: 'document-check', action: 'contracts' },
-    { title: 'Mon profil',           icon: 'user',           action: 'profile' }
+    { title: 'Déclarer un sinistre', icon: 'plus-circle',    action: 'declare-claim', actionKey: 'declare'   },
+    { title: 'Mes sinistres',        icon: 'clipboard-list', action: 'my-claims',     actionKey: 'claims'    },
+    { title: 'Mes contrats',         icon: 'document-check', action: 'contracts',     actionKey: 'contracts' },
+    { title: 'Mon profil',           icon: 'user',           action: 'profile',       actionKey: 'profile'   }
   ];
 
   constructor(
-    private authService: AuthService,
-    private router:      Router,
-    private http:        HttpClient,
-    private cdr:         ChangeDetectorRef
+    private authService:     AuthService,
+    public  router:          Router,
+    private http:            HttpClient,
+    private cdr:             ChangeDetectorRef,
+    private firebaseService: FirebaseNotificationService,
+    public  langService:     LanguageService,   // ← OK maintenant car importé
   ) {
     this.fullName = this.authService.getFullName() || 'Utilisateur';
     this.role     = this.authService.getRole()     || 'CLIENT';
   }
 
   ngOnInit(): void {
+    this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
+      this.notifications = notifs;
+      this.notifCount    = this.firebaseService.getUnreadCount();
+      this.cdr.detectChanges();
+    });
+
     const user = this.authService.getUser();
     if (!user?.email) {
       this.isLoading = false;
       return;
     }
 
-    // ✅ Récupère le profil numérique depuis auth_db par email
     this.http.get<any>(
       `http://localhost:8080/api/auth/profile/email/${user.email}`
     ).subscribe({
       next: (profile) => {
         this.fullName = profile.fullName || user.fullName;
-
-        // ✅ Photo de profil
         if (profile.profileImage) {
           this.profileImage =
             `http://localhost:8080/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
         }
-
-        // ✅ Charge sinistres avec ID numérique
         this.loadDashboardData(profile.id);
       },
       error: () => {
@@ -79,58 +91,67 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.notifSub?.unsubscribe();
+  }
+
+  toggleNotifPanel() {
+    this.showNotifPanel = !this.showNotifPanel;
+    if (this.showNotifPanel) {
+      this.notifCount = 0;
+      this.firebaseService.markAsSeen();
+    }
+  }
+
+  clearNotifications() {
+    this.firebaseService.clearNotifications();
+    this.showNotifPanel = false;
+  }
+
+  toggleLang() {
+    this.langService.toggle();
+    this.cdr.detectChanges();
+  }
+
   loadDashboardData(clientId: number): void {
     this.isLoading = true;
+    this.http.get<any[]>(`http://localhost:8080/api/claims/client/${clientId}`)
+      .subscribe({
+        next: (claims) => {
+          this.stats = [
+            { title: 'Sinistres déclarés', value: claims.length,
+              bgClass: 'bg-blue-100', iconClass: 'text-blue-600', icon: 'clipboard-list' },
+            { title: 'En attente',
+              value: claims.filter(c => [
+                'SUBMITTED','ROUTING','VALIDATING','ESTIMATING','AGGREGATING','PROCESSING'
+              ].includes(c.status)).length,
+              bgClass: 'bg-yellow-100', iconClass: 'text-yellow-600', icon: 'clock' },
+            { title: 'En révision humaine',
+              value: claims.filter(c => c.status === 'HUMAN_REQUIRED').length,
+              bgClass: 'bg-orange-100', iconClass: 'text-orange-600', icon: 'clock' },
+            { title: 'Approuvés',
+              value: claims.filter(c =>
+                c.status === 'APPROVED' || c.status === 'COMPLETED').length,
+              bgClass: 'bg-green-100', iconClass: 'text-green-600', icon: 'document-check' }
+          ];
 
-    this.http.get<any[]>(
-      `http://localhost:8080/api/claims/client/${clientId}`
-    ).subscribe({
-      next: (claims) => {
-        this.stats = [
-          {
-            title:     'Sinistres déclarés',
-            value:     claims.length,
-            bgClass:   'bg-blue-100',
-            iconClass: 'text-blue-600',
-            icon:      'clipboard-list'
-          },
-          {
-            title:     'En attente de révision',
-            value:     claims.filter(c =>
-              c.status === 'SUBMITTED' ||
-              c.status === 'HUMAN_REQUIRED' ||
-              c.status === 'PROCESSING'
-            ).length,
-            bgClass:   'bg-yellow-100',
-            iconClass: 'text-yellow-600',
-            icon:      'clock'
-          },
-          {
-            title:     'Approuvés',
-            value:     claims.filter(c => c.status === 'COMPLETED').length,
-            bgClass:   'bg-green-100',
-            iconClass: 'text-green-600',
-            icon:      'document-check'
-          }
-        ];
+          this.contracts = [
+            { type: 'Automobile', typeKey: 'AUTO',   count: claims.filter(c => c.claimType === 'AUTO').length,   bgClass: 'bg-red-100',    iconClass: 'text-red-600',    icon: 'car'    },
+            { type: 'Habitation', typeKey: 'HOME',   count: claims.filter(c => c.claimType === 'HOME').length,   bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'house'  },
+            { type: 'Santé',      typeKey: 'HEALTH', count: claims.filter(c => c.claimType === 'HEALTH').length, bgClass: 'bg-pink-100',   iconClass: 'text-pink-600',   icon: 'heart'  },
+            { type: 'Autres',     typeKey: 'OTHER',  count: claims.filter(c => c.claimType === 'OTHER').length,  bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' }
+          ];
 
-        this.contracts = [
-          { type: 'Automobile', count: claims.filter(c => c.claimType === 'AUTO').length,   bgClass: 'bg-red-100',    iconClass: 'text-red-600',    icon: 'car' },
-          { type: 'Habitation', count: claims.filter(c => c.claimType === 'HOME').length,   bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'house' },
-          { type: 'Santé',      count: claims.filter(c => c.claimType === 'HEALTH').length, bgClass: 'bg-pink-100',   iconClass: 'text-pink-600',   icon: 'heart' },
-          { type: 'Autres',     count: claims.filter(c => c.claimType === 'OTHER').length,  bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' }
-        ];
-
-        this.recentClaims = [...claims.slice(0, 5)];
-        this.isLoading    = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Erreur chargement dashboard:', err);
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
+          this.recentClaims = [...claims.slice(0, 5)];
+          this.isLoading    = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Erreur chargement dashboard:', err);
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   performAction(action: string): void {
@@ -166,10 +187,8 @@ export class DashboardComponent implements OnInit {
 
   getTypeLabel(type: string): string {
     const labels: { [key: string]: string } = {
-      'AUTO':   'Automobile',
-      'HOME':   'Habitation',
-      'HEALTH': 'Santé',
-      'OTHER':  'Autre'
+      'AUTO': 'Automobile', 'HOME': 'Habitation',
+      'HEALTH': 'Santé', 'OTHER': 'Autre'
     };
     return labels[type] || type;
   }

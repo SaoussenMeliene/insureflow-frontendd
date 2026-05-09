@@ -5,11 +5,14 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { LanguageService } from '../../../core/services/language.service';
+
 
 @Component({
   selector: 'app-contracts-admin',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,TranslateModule],
   templateUrl: './contracts.html'
 })
 export class ContractsComponent implements OnInit {
@@ -45,12 +48,18 @@ export class ContractsComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private http:        HttpClient,
-    private cdr:         ChangeDetectorRef
+    private cdr:         ChangeDetectorRef,
+    private translate:        TranslateService, // ← AJOUTER
+    public  langService:      LanguageService,
   ) {}
 
   ngOnInit() {
     const user = this.authService.getUser();
     if (user) this.fullName = user.fullName || '';
+  }
+  toggleLang() {
+    this.langService.toggle();
+    this.cdr.detectChanges(); // ← force le recalcul des getters
   }
 
   // ── Lance la réindexation ────────────────────

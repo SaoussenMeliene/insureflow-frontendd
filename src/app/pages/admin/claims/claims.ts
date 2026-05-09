@@ -5,10 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { LanguageService } from '../../../core/services/language.service';
+
 @Component({
   selector: 'app-claims',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
   templateUrl: './claims.html',
   styleUrl: './claims.css'
 })
@@ -43,7 +46,9 @@ export class ClaimsComponent implements OnInit {
     private authService: AuthService,
     private http:        HttpClient,
     private cdr:         ChangeDetectorRef,
-    private router:      Router  // ← AJOUTER
+    private router:      Router,  // ← AJOUTER
+    private translate:        TranslateService,
+   public  langService:      LanguageService,
   ) {}
 
   ngOnInit() {
@@ -67,7 +72,10 @@ export class ClaimsComponent implements OnInit {
         error: () => { this.isLoading = false; }
       });
   }
-
+toggleLang() {
+    this.langService.toggle();
+    this.cdr.detectChanges(); // ← force le recalcul des getters
+  }
   get filteredClaims(): any[] {
     return this.claims.filter(c => {
       const matchSearch = !this.searchQuery ||
@@ -168,7 +176,7 @@ export class ClaimsComponent implements OnInit {
   private updateStepsWithResult(result: any) {
     if (this.pipelineSteps[0]) {
       this.pipelineSteps[0].status = 'done';
-      this.pipelineSteps[0].result = result.claimType || 'AUTO';
+      this.pipelineSteps[0].result = result.routerDecision || result.claimType || '—';
     }
     if (this.pipelineSteps[1]) {
       this.pipelineSteps[1].status = 'done';
@@ -215,7 +223,7 @@ export class ClaimsComponent implements OnInit {
         this.pipelineSteps = [
           { label: 'Router Agent — Classification',
             status: 'done',
-            result: claim.claimType || '—' },
+            result: result.routerDecision || claim.claimType || '—' },
           { label: 'Contract RAG — Validation contrat',
             status: 'done',
             result: result.contractDecision || '—' },

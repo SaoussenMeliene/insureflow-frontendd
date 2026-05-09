@@ -5,14 +5,12 @@
       <div class="flex items-center gap-3 mb-8">
         <img src="logo.png" alt="InsureFlow" class="h-10 w-auto object-contain" />
       </div>
-
       <div class="mb-6">
         <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1
                      text-xs font-semibold tracking-wide text-emerald-700 border border-emerald-100">
           ADMIN
         </span>
       </div>
-
       <nav class="space-y-2">
         <a routerLink="/admin/dashboard" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -22,9 +20,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M3 13h8V3H3v10zm10 8h8V3h-8v18zM3 21h8v-6H3v6z"/>
           </svg>
-          Vue d'ensemble
+          {{ 'nav.overview' | translate }}
         </a>
-
         <a routerLink="/admin/claims" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
           class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent
                  text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
@@ -32,9 +29,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-          Tous les sinistres
+          {{ 'nav.claims' | translate }}
         </a>
-
         <a routerLink="/admin/review" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
           class="flex items-center justify-between px-4 py-3 rounded-2xl border border-transparent
                  text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
@@ -43,14 +39,13 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Révision humaine
+            {{ 'nav.review' | translate }}
           </span>
           <span class="min-w-[24px] h-6 px-2 rounded-full bg-amber-100 text-amber-700
                        text-xs font-semibold flex items-center justify-center">
             {{ pendingCount }}
           </span>
         </a>
-
         <a routerLink="/admin/users" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
           class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent
                  text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
@@ -58,9 +53,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M17 20h5V4H2v16h5m10 0v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2m12 0H7m10-10a4 4 0 11-8 0 4 4 0 018 0z"/>
           </svg>
-          Gestion utilisateurs
+          {{ 'nav.users' | translate }}
         </a>
-
         <a routerLink="/admin/contracts" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
           class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent
                  text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
@@ -68,7 +62,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"/>
           </svg>
-          Contrats
+          {{ 'nav.contracts' | translate }}
         </a>
       </nav>
 
@@ -82,15 +76,14 @@
             </div>
             <div class="min-w-0">
               <p class="text-sm font-semibold text-slate-900 truncate">{{ fullName }}</p>
-              <p class="text-xs text-slate-500">Administrateur</p>
+              <p class="text-xs text-slate-500">{{ 'auth.admin' | translate }}</p>
             </div>
           </div>
           <button type="button" (click)="logout()"
             class="p-2 rounded-xl text-rose-600 hover:bg-rose-50 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 01-2 2H6a2 2 0
-                   01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1"/>
+                d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1"/>
             </svg>
           </button>
         </div>
@@ -108,11 +101,17 @@
             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-medium text-slate-900">Révision humaine</span>
+            <span class="font-medium text-slate-900">{{ 'nav.review' | translate }}</span>
           </div>
-          <h1 class="text-2xl font-bold text-slate-900">Tableau de bord administrateur</h1>
+          <h1 class="text-2xl font-bold text-slate-900">{{ 'admin.review.title' | translate }}</h1>
         </div>
         <div class="flex items-center gap-3 pl-2">
+          <!-- Switch langue -->
+          <button (click)="toggleLang()"
+            class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200
+                   text-sm font-semibold hover:bg-slate-50 transition">
+            {{ langService.current === 'fr' ? '🇬🇧 EN' : '🇫🇷 FR' }}
+          </button>
           <div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shadow-sm">
             <span class="text-sm font-bold text-white">
               {{ fullName ? fullName.charAt(0) : 'A' }}
@@ -120,7 +119,7 @@
           </div>
           <div class="hidden md:block">
             <p class="text-sm font-semibold text-slate-900">{{ fullName }}</p>
-            <p class="text-xs text-slate-500">Administrateur</p>
+            <p class="text-xs text-slate-500">{{ 'auth.admin' | translate }}</p>
           </div>
         </div>
       </div>
@@ -128,10 +127,8 @@
 
     <main class="p-8 space-y-8 bg-slate-50 min-h-screen">
       <section>
-        <h2 class="text-4xl font-bold text-slate-900">Révision humaine</h2>
-        <p class="text-slate-500 mt-2 text-lg">
-          Dossiers nécessitant l'intervention d'un administrateur
-        </p>
+        <h2 class="text-4xl font-bold text-slate-900">{{ 'admin.review.heading' | translate }}</h2>
+        <p class="text-slate-500 mt-2 text-lg">{{ 'admin.review.subtitle' | translate }}</p>
       </section>
 
       <!-- Tabs -->
@@ -140,28 +137,28 @@
           [ngClass]="activeTab === 'pending' ?
             'px-5 py-2 rounded-xl bg-slate-900 text-white font-medium' :
             'px-5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700'">
-          En attente ({{ pendingCount }})
+          {{ 'admin.review.tabs.pending' | translate }} ({{ pendingCount }})
         </button>
         <button type="button" (click)="activeTab = 'all'; applyFilters()"
           [ngClass]="activeTab === 'all' ?
             'px-5 py-2 rounded-xl bg-slate-900 text-white font-medium' :
             'px-5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700'">
-          Tous les dossiers
+          {{ 'admin.review.tabs.all' | translate }}
         </button>
       </section>
 
       <!-- Stats -->
       <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <div class="bg-white border border-slate-200 rounded-2xl p-6">
-          <p class="text-slate-500 text-sm mb-2">Total en attente</p>
+          <p class="text-slate-500 text-sm mb-2">{{ 'admin.review.stats.pending' | translate }}</p>
           <h3 class="text-3xl font-bold text-amber-600">{{ pendingCount }}</h3>
         </div>
         <div class="bg-white border border-slate-200 rounded-2xl p-6">
-          <p class="text-slate-500 text-sm mb-2">Fraudes suspectées</p>
+          <p class="text-slate-500 text-sm mb-2">{{ 'admin.review.stats.suspectedFraud' | translate }}</p>
           <h3 class="text-3xl font-bold text-rose-600">{{ suspectedFraudCount }}</h3>
         </div>
         <div class="bg-white border border-slate-200 rounded-2xl p-6">
-          <p class="text-slate-500 text-sm mb-2">Score moyen</p>
+          <p class="text-slate-500 text-sm mb-2">{{ 'admin.review.stats.avgScore' | translate }}</p>
           <h3 class="text-3xl font-bold text-sky-600">{{ averageConfidence }}%</h3>
         </div>
       </section>
@@ -172,18 +169,19 @@
           <select [(ngModel)]="selectedClaimType" (change)="applyFilters()"
             class="min-w-[180px] px-4 py-3 rounded-xl border border-slate-200
                    bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">Tous types</option>
-            <option value="AUTO">AUTO</option>
-            <option value="SCOLAIRE">SCOLAIRE</option>
-            <option value="HOME">HOME</option>
-            <option value="HEALTH">HEALTH</option>
+            <option value="">{{ 'admin.claims.filterType' | translate }}</option>
+            <option value="AUTO">{{ 'client.claimTypes.AUTO'     | translate }}</option>
+            <option value="SCOLAIRE">{{ 'client.claimTypes.SCOLAIRE' | translate }}</option>
+            <option value="HOME">{{ 'client.claimTypes.HOME'     | translate }}</option>
+            <option value="HEALTH">{{ 'client.claimTypes.HEALTH'   | translate }}</option>
+            <option value="OTHER">{{ 'client.claimTypes.OTHER'    | translate }}</option>
           </select>
         </div>
       </section>
 
       <!-- Loading -->
       <div *ngIf="isLoading" class="text-center py-12 text-slate-400">
-        Chargement...
+        {{ 'admin.claims.loading' | translate }}
       </div>
 
       <!-- Cards -->
@@ -199,24 +197,18 @@
               <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs">
                 {{ claim.claimType }}
               </span>
-              <span class="text-slate-500 text-sm">
-                {{ formatDate(claim.createdAt) }}
-              </span>
+              <span class="text-slate-500 text-sm">{{ formatDate(claim.createdAt) }}</span>
             </div>
-
             <span *ngIf="claim.humanReviewReason?.includes('Fraude')"
-              class="px-4 py-2 rounded-full bg-amber-100 text-amber-700
-                     text-xs font-semibold whitespace-nowrap">
-              Fraude suspectée
+              class="px-4 py-2 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold whitespace-nowrap">
+              {{ 'admin.review.card.suspectedFraud' | translate }}
             </span>
             <span *ngIf="!claim.humanReviewReason?.includes('Fraude')"
-              class="px-4 py-2 rounded-full bg-orange-100 text-orange-700
-                     text-xs font-semibold whitespace-nowrap">
-              Révision requise
+              class="px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold whitespace-nowrap">
+              {{ 'admin.review.card.reviewRequired' | translate }}
             </span>
           </div>
 
-          <!-- ✅ Score — utilise getReason() -->
           <div class="flex items-center gap-4 mb-4">
             <div class="w-14 h-14 rounded-full flex items-center justify-center
                         font-bold text-lg border-4"
@@ -228,37 +220,31 @@
               {{ (claim.overallScore * 100) | number:'1.0-0' }}%
             </div>
             <div>
-              <p class="text-slate-500 text-sm">Score IA</p>
-              <!-- ✅ getReason() supprime le score en dur du texte -->
+              <p class="text-slate-500 text-sm">{{ 'admin.review.card.aiScore' | translate }}</p>
               <p class="font-semibold text-slate-900">{{ getReason(claim) }}</p>
             </div>
           </div>
 
-          <!-- ✅ Raison — utilise getReason() -->
-          <div class="bg-rose-50 border border-rose-200 text-rose-700
-                      px-4 py-3 rounded-xl mb-4 text-sm">
+          <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl mb-4 text-sm">
             ⚠ {{ getReason(claim) }}
           </div>
 
           <button type="button" (click)="openReviewModal(claim)"
-            class="w-full bg-sky-500 hover:bg-sky-600 text-white
-                   font-semibold py-3 rounded-xl transition">
-            Examiner le dossier
+            class="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition">
+            {{ 'admin.review.card.examine' | translate }}
           </button>
         </div>
 
         <div *ngIf="filteredClaims.length === 0"
           class="col-span-2 text-center py-12 text-slate-400">
-          Aucun dossier en attente
+          {{ 'admin.review.empty' | translate }}
         </div>
       </section>
     </main>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════ -->
-<!-- MODAL DÉCISION                              -->
-<!-- ════════════════════════════════════════════ -->
+<!-- MODAL DÉCISION -->
 <div *ngIf="showReviewModal && selectedReviewClaim"
   (click)="closeReviewModal()"
   class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm
@@ -268,108 +254,82 @@
     class="w-full max-w-4xl max-h-[95vh] overflow-y-auto rounded-3xl
            bg-white border border-slate-200 shadow-2xl p-8">
 
-    <!-- Header modal -->
     <div class="flex items-start justify-between mb-6">
       <div>
-        <h2 class="text-3xl font-bold text-slate-900">
-          {{ selectedReviewClaim.claimReference }}
-        </h2>
+        <h2 class="text-3xl font-bold text-slate-900">{{ selectedReviewClaim.claimReference }}</h2>
         <p class="text-slate-500 mt-1">
-          {{ selectedReviewClaim.claimType }} —
-          {{ formatDate(selectedReviewClaim.createdAt) }}
+          {{ selectedReviewClaim.claimType }} — {{ formatDate(selectedReviewClaim.createdAt) }}
         </p>
       </div>
       <button type="button" (click)="closeReviewModal()"
         class="text-slate-400 hover:text-slate-700 text-3xl leading-none">×</button>
     </div>
 
-    <!-- ── Informations sinistre ────────────────── -->
+    <!-- Informations sinistre -->
     <div class="mb-6">
       <h3 class="text-sky-600 uppercase tracking-wider text-sm font-semibold mb-3">
-        Informations sinistre
+        {{ 'admin.review.modal.claimInfo' | translate }}
       </h3>
-
       <div class="grid grid-cols-2 gap-3 mb-3">
         <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Police</p>
-          <p class="font-semibold text-slate-900">
-            {{ selectedReviewClaim.policyNumber }}
-          </p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.policy' | translate }}</p>
+          <p class="font-semibold text-slate-900">{{ selectedReviewClaim.policyNumber }}</p>
         </div>
         <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Lieu</p>
-          <p class="font-semibold text-slate-900">
-            {{ selectedReviewClaim.incidentLocation || '—' }}
-          </p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.location' | translate }}</p>
+          <p class="font-semibold text-slate-900">{{ selectedReviewClaim.incidentLocation || '—' }}</p>
         </div>
       </div>
 
       <!-- Véhicule si AUTO -->
-      <div *ngIf="selectedReviewClaim.claimType === 'AUTO' &&
-                  selectedReviewClaim.vehicleBrand"
+      <div *ngIf="selectedReviewClaim.claimType === 'AUTO' && selectedReviewClaim.vehicleBrand"
         class="grid grid-cols-3 gap-3 mb-3">
         <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Marque</p>
-          <p class="font-semibold text-slate-900">
-            {{ selectedReviewClaim.vehicleBrand }}
-          </p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.brand' | translate }}</p>
+          <p class="font-semibold text-slate-900">{{ selectedReviewClaim.vehicleBrand }}</p>
         </div>
         <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Modèle</p>
-          <p class="font-semibold text-slate-900">
-            {{ selectedReviewClaim.vehicleModel || '—' }}
-          </p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.model' | translate }}</p>
+          <p class="font-semibold text-slate-900">{{ selectedReviewClaim.vehicleModel || '—' }}</p>
         </div>
         <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Année</p>
-          <p class="font-semibold text-slate-900">
-            {{ selectedReviewClaim.vehicleYear || '—' }}
-          </p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.year' | translate }}</p>
+          <p class="font-semibold text-slate-900">{{ selectedReviewClaim.vehicleYear || '—' }}</p>
         </div>
       </div>
 
-      <!-- Description -->
       <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 mb-3">
-        <p class="text-slate-500 text-xs mb-1">Description</p>
+        <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.description' | translate }}</p>
         <p class="text-slate-900">{{ selectedReviewClaim.description }}</p>
       </div>
 
       <!-- Photos -->
       <div class="mb-3">
-        <p class="text-slate-500 text-xs font-semibold mb-2">📸 Photos du sinistre</p>
-        <div *ngIf="getValidPhotos(selectedReviewClaim.photoUrls).length > 0;
-                    else noPhotos"
+        <p class="text-slate-500 text-xs font-semibold mb-2">📸 {{ 'admin.review.modal.photos' | translate }}</p>
+        <div *ngIf="getValidPhotos(selectedReviewClaim.photoUrls).length > 0; else noPhotos"
           class="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div *ngFor="let photo of getValidPhotos(selectedReviewClaim.photoUrls)"
             class="h-48 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
-            <img [src]="photo"
-              alt="Photo sinistre"
-              class="w-full h-full object-cover cursor-pointer
-                     hover:opacity-90 transition"
-              loading="lazy"
-              (click)="openPhoto(photo)"/>
+            <img [src]="photo" alt="Photo sinistre"
+              class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
+              loading="lazy" (click)="openPhoto(photo)"/>
           </div>
         </div>
         <ng-template #noPhotos>
-          <div class="rounded-xl border border-slate-200 bg-slate-50
-                      p-4 text-slate-400 text-sm text-center">
-            Aucune photo disponible
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-400 text-sm text-center">
+            {{ 'admin.review.modal.noPhotos' | translate }}
           </div>
         </ng-template>
       </div>
     </div>
 
-    <!-- ── Résultat IA ─────────────────────────── -->
+    <!-- Résultat IA -->
     <div class="mb-6">
       <h3 class="text-sky-600 uppercase tracking-wider text-sm font-semibold mb-3">
-        Résultat IA
+        {{ 'admin.review.modal.aiResult' | translate }}
       </h3>
-
-      <!-- ✅ Score global — selectedReviewClaim -->
-      <div class="bg-slate-50 rounded-xl p-4 border border-slate-200
-                  flex items-center gap-4 mb-3">
-        <div class="w-16 h-16 rounded-full border-4 flex items-center
-                    justify-center font-bold text-xl shrink-0"
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 flex items-center gap-4 mb-3">
+        <div class="w-16 h-16 rounded-full border-4 flex items-center justify-center font-bold text-xl shrink-0"
           [ngClass]="(selectedReviewClaim.overallScore * 100) >= 70 ?
             'border-green-400 text-green-600' :
             (selectedReviewClaim.overallScore * 100) >= 50 ?
@@ -378,44 +338,32 @@
           {{ (selectedReviewClaim.overallScore * 100) | number:'1.0-0' }}%
         </div>
         <div>
-          <p class="text-slate-500 text-sm mb-1">Raison de révision</p>
-          <!-- ✅ getReason() sur selectedReviewClaim -->
-          <p class="text-slate-900 font-medium">
-            {{ getReason(selectedReviewClaim) }}
-          </p>
+          <p class="text-slate-500 text-sm mb-1">{{ 'admin.review.modal.reviewReason' | translate }}</p>
+          <p class="text-slate-900 font-medium">{{ getReason(selectedReviewClaim) }}</p>
         </div>
       </div>
 
-      <!-- Détails agents -->
       <div class="grid grid-cols-2 gap-3">
         <div *ngIf="selectedReviewClaim.contractDecision"
           class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Contrat RAG</p>
-          <p class="font-semibold text-slate-900 text-sm">
-            {{ selectedReviewClaim.contractDecision }}
-          </p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.contractRag' | translate }}</p>
+          <p class="font-semibold text-slate-900 text-sm">{{ selectedReviewClaim.contractDecision }}</p>
         </div>
-
         <div *ngIf="selectedReviewClaim.estimatedCostMin"
           class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Estimation</p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.estimation' | translate }}</p>
           <p class="font-semibold text-slate-900 text-sm">
-            {{ selectedReviewClaim.estimatedCostMin }}
-            — {{ selectedReviewClaim.estimatedCostMax }} DT
+            {{ selectedReviewClaim.estimatedCostMin }} — {{ selectedReviewClaim.estimatedCostMax }} DT
           </p>
         </div>
-
         <div *ngIf="selectedReviewClaim.fraudType"
           class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Fraude détectée</p>
-          <p class="font-semibold text-red-600 text-sm">
-            ⚠ {{ selectedReviewClaim.fraudType }}
-          </p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.fraudDetected' | translate }}</p>
+          <p class="font-semibold text-red-600 text-sm">⚠ {{ selectedReviewClaim.fraudType }}</p>
         </div>
-
         <div *ngIf="selectedReviewClaim.fraudScore"
           class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-          <p class="text-slate-500 text-xs mb-1">Score fraude</p>
+          <p class="text-slate-500 text-xs mb-1">{{ 'admin.review.modal.fraudScore' | translate }}</p>
           <p class="font-semibold text-slate-900 text-sm">
             {{ (selectedReviewClaim.fraudScore * 100) | number:'1.0-0' }}%
           </p>
@@ -423,60 +371,50 @@
       </div>
     </div>
 
-    <!-- ── Décision Admin ─────────────────────────── -->
+    <!-- Décision Admin -->
     <div>
       <h3 class="text-sky-600 uppercase tracking-wider text-sm font-semibold mb-3">
-        Décision admin
+        {{ 'admin.review.modal.decision' | translate }}
       </h3>
-
       <div class="mb-4">
         <label class="block text-slate-500 text-sm mb-2">
-          Commentaire (optionnel)
+          {{ 'admin.review.modal.comment' | translate }}
         </label>
         <textarea rows="3" [(ngModel)]="reviewerComment"
-          placeholder="Notes du réviseur..."
+          [placeholder]="'admin.review.modal.commentPlaceholder' | translate"
           class="w-full rounded-xl bg-white border border-slate-300
                  text-slate-900 px-4 py-3 outline-none focus:ring-2 focus:ring-sky-500">
         </textarea>
       </div>
-
       <div class="mb-4">
         <label class="block text-slate-500 text-sm mb-2">
-          Motif de rejet
-          <span class="text-rose-500">(obligatoire si rejet)</span>
+          {{ 'admin.review.modal.rejectionMotif' | translate }}
+          <span class="text-rose-500">({{ 'admin.review.modal.requiredIfRejected' | translate }})</span>
         </label>
         <input type="text" [(ngModel)]="rejectionMotif"
-          placeholder="Ex: Fraude avérée, documents insuffisants..."
+          [placeholder]="'admin.review.modal.rejectionPlaceholder' | translate"
           class="w-full rounded-xl bg-white border border-slate-300
                  text-slate-900 px-4 py-3 outline-none focus:ring-2 focus:ring-sky-500"/>
       </div>
-
       <div class="flex flex-col md:flex-row gap-4 pt-2">
-        <button type="button" (click)="makeDecision('APPROVE')"
-          [disabled]="decisionLoading"
+        <button type="button" (click)="makeDecision('APPROVE')" [disabled]="decisionLoading"
           class="flex-1 py-4 rounded-2xl bg-emerald-50 border border-emerald-300
-                 text-emerald-700 text-xl font-bold hover:bg-emerald-100
-                 transition disabled:opacity-50">
-          {{ decisionLoading ? '...' : '✔ APPROUVER' }}
+                 text-emerald-700 text-xl font-bold hover:bg-emerald-100 transition disabled:opacity-50">
+          {{ decisionLoading ? '...' : ('admin.review.modal.approve' | translate) }}
         </button>
-
-        <button type="button" (click)="makeDecision('REJECT')"
-          [disabled]="decisionLoading"
+        <button type="button" (click)="makeDecision('REJECT')" [disabled]="decisionLoading"
           class="flex-1 py-4 rounded-2xl bg-rose-50 border border-rose-300
-                 text-rose-700 text-xl font-bold hover:bg-rose-100
-                 transition disabled:opacity-50">
-          {{ decisionLoading ? '...' : '✖ REJETER' }}
+                 text-rose-700 text-xl font-bold hover:bg-rose-100 transition disabled:opacity-50">
+          {{ decisionLoading ? '...' : ('admin.review.modal.reject' | translate) }}
         </button>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- Toast -->
 <div *ngIf="showToast"
   [ngClass]="toastType === 'success' ? 'bg-emerald-500' : 'bg-rose-500'"
-  class="fixed top-6 right-6 z-50 text-white px-6 py-4
-         rounded-2xl shadow-lg font-semibold text-sm">
+  class="fixed top-6 right-6 z-50 text-white px-6 py-4 rounded-2xl shadow-lg font-semibold text-sm">
   {{ toastMessage }}
 </div>

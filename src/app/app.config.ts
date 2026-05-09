@@ -1,9 +1,24 @@
-import { ApplicationConfig, APP_INITIALIZER } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER, importProvidersFrom } from '@angular/core';
 import { provideRouter, withRouterConfig } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'; // ← withInterceptorsFromDi
+import { provideHttpClient, withInterceptorsFromDi, HttpClient } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { routes } from './app.routes';
 import { KeycloakService, KeycloakBearerInterceptor } from 'keycloak-angular';
+import { FirebaseNotificationService } from './core/services/firebase.service';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
+
+// ✅ Loader manuel sans TranslateHttpLoader
+export class ManualTranslateLoader implements TranslateLoader {
+  constructor(private http: HttpClient) {}
+  getTranslation(lang: string): Observable<any> {
+    return this.http.get(`/i18n/${lang}.json`);
+  }
+}
+
+export function HttpLoaderFactory(http: HttpClient): ManualTranslateLoader {
+  return new ManualTranslateLoader(http);
+}
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -14,7 +29,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
         clientId: 'angular-app'
       },
       initOptions: {
-        onLoad: 'check-sso', 
+        onLoad: 'check-sso',
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html'
       },
@@ -28,6 +43,12 @@ function initializeKeycloak(keycloak: KeycloakService) {
     });
 }
 
+function initializeFirebase(firebaseService: FirebaseNotificationService) {
+  return async () => {
+    await firebaseService.initNotifications();
+  };
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(
@@ -35,8 +56,19 @@ export const appConfig: ApplicationConfig = {
       withRouterConfig({ onSameUrlNavigation: 'reload' })
     ),
 
-    // ✅ withInterceptorsFromDi pour supporter HTTP_INTERCEPTORS classique
     provideHttpClient(withInterceptorsFromDi()),
+
+    // ✅ ngx-translate
+    importProvidersFrom(
+      TranslateModule.forRoot({
+        fallbackLang: 'fr',
+        loader: {
+          provide:    TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps:       [HttpClient]
+        }
+      })
+    ),
 
     // ✅ Interceptor Keycloak
     {
@@ -51,6 +83,6 @@ export const appConfig: ApplicationConfig = {
       useFactory: initializeKeycloak,
       multi:      true,
       deps:       [KeycloakService]
-    }
+    },
   ]
 };

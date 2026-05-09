@@ -4,11 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService, AppUser } from '../../../core/services/user';
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { LanguageService } from '../../../core/services/language.service';
+
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule,TranslateModule],
   templateUrl: './users.html',
   styleUrls: ['./users.css']
 })
@@ -44,7 +47,9 @@ export class Users implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+     private translate:        TranslateService, // ← AJOUTER
+    public  langService:      LanguageService,
 
   ) {}
 
@@ -104,7 +109,10 @@ loadUsers(): void {
     }
   });
 }
-
+  toggleLang() {
+    this.langService.toggle();
+    this.cdr.detectChanges(); // ← force le recalcul des getters
+  }
   computeStats(): void {
     const users = Array.isArray(this.users) ? this.users : [];
 

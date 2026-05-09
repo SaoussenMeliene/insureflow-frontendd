@@ -1,18 +1,21 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
-
+import { FirebaseNotificationService } from '../../../core/services/firebase.service';
+import { Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';                              // ← AJOUTER
+import { LanguageService } from '../../../core/services/language.service';  
 @Component({
   selector: 'app-contracts',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,TranslateModule],
   templateUrl: './contracts.html',
   styleUrl: './contracts.css'
 })
-export class ContractsComponent implements OnInit {
+export class ContractsComponent implements OnInit, OnDestroy {
 
   fullName         = '';
   role             = '';
@@ -22,17 +25,32 @@ export class ContractsComponent implements OnInit {
   isModalOpen      = false;
   selectedContract: any = null;
 
+  // ✅ Notifications
+  notifCount     = 0;
+  notifications: any[] = [];
+  showNotifPanel = false;
+  private notifSub?: Subscription;
+
   constructor(
-    private authService: AuthService,
-    private router:      Router,
-    private http:        HttpClient,
-    private cdr:         ChangeDetectorRef
+    private authService:     AuthService,
+    private router:          Router,
+    private http:            HttpClient,
+    private cdr:             ChangeDetectorRef,
+    private firebaseService: FirebaseNotificationService,
+    public langService: LanguageService,
   ) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.profileImage = user.profileImage || '';
   }
 
   ngOnInit() {
+    // ✅ Subscribe au BehaviorSubject partagé
+    this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
+      this.notifications = notifs;
+      this.notifCount    = this.firebaseService.getUnreadCount();
+      this.cdr.detectChanges();
+    });
+
     const user = this.authService.getUser();
     if (!user?.email) return;
 
@@ -55,19 +73,36 @@ export class ContractsComponent implements OnInit {
         this.http.get<any[]>(
           `http://localhost:8080/api/claims/client/${profile.id}`
         ).subscribe({
-          next: (claims) => {
-            this.loadContractsByEmail(user.email, claims.length);
-          },
-          error: () => {
-            this.loadContractsByEmail(user.email, 0);
-          }
+          next: (claims) => this.loadContractsByEmail(user.email, claims.length),
+          error: ()       => this.loadContractsByEmail(user.email, 0)
         });
       },
-      error: () => {
-        this.loadContractsByEmail(user.email, 0);
-      }
+      error: () => this.loadContractsByEmail(user.email, 0)
     });
   }
+
+  ngOnDestroy() {
+    this.notifSub?.unsubscribe();
+  }
+
+  // ✅ Toggle panel
+  toggleNotifPanel() {
+  this.showNotifPanel = !this.showNotifPanel;
+  if (this.showNotifPanel) {
+    this.notifCount = 0;
+    this.firebaseService.markAsSeen(); // ← AJOUTER
+  }
+}
+
+  // ✅ Effacer notifications
+  clearNotifications() {
+    this.firebaseService.clearNotifications();
+    this.showNotifPanel = false;
+  }
+
+  toggleLang() {
+  this.langService.toggle();
+}
 
   loadContractsByEmail(email: string, claimsCount: number) {
     const emailLower = email.toLowerCase().trim();
@@ -118,11 +153,10 @@ export class ContractsComponent implements OnInit {
       ]
     };
 
-    // ✅ Map email → liste de contrats
     const emailToContracts: { [key: string]: any[] } = {
       'wafa@gmail.com'     : [CONTRACT_AUTO],
       'amine@gmail.com'    : [CONTRACT_AUTO],
-      'ali@gmail.com'      : [CONTRACT_AUTO, CONTRACT_SCOLAIRE],  // ✅ 2 contrats
+      'ali@gmail.com'      : [CONTRACT_AUTO, CONTRACT_SCOLAIRE],
       'client@email.com'   : [CONTRACT_AUTO],
       'scolaire@email.com' : [CONTRACT_SCOLAIRE],
       'ahmed@email.com'    : [CONTRACT_SCOLAIRE]
@@ -130,16 +164,14 @@ export class ContractsComponent implements OnInit {
 
     const contractList = emailToContracts[emailLower];
 
-    if (contractList) {
-      this.contracts = contractList.map(contract => ({
-        ...contract,
-        holderName:    this.fullName,
-        holderEmail:   email,
-        holderAddress: 'Tunisie'
-      }));
-    } else {
-      this.contracts = [];
-    }
+    this.contracts = contractList
+      ? contractList.map(contract => ({
+          ...contract,
+          holderName:    this.fullName,
+          holderEmail:   email,
+          holderAddress: 'Tunisie'
+        }))
+      : [];
 
     console.log('Contrats trouvés :', this.contracts.length);
     this.cdr.detectChanges();

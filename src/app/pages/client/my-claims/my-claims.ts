@@ -1,18 +1,21 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
-
+import { FirebaseNotificationService } from '../../../core/services/firebase.service';
+import { Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../core/services/language.service';
 @Component({
   selector: 'app-my-claims',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
   templateUrl: './my-claims.html',
   styleUrls: ['./my-claims.css']
 })
-export class MyClaims implements OnInit {
+export class MyClaims implements OnInit, OnDestroy {
 
   fullName      = '';
   role          = '';
@@ -24,13 +27,28 @@ export class MyClaims implements OnInit {
   searchQuery  = '';
   filterStatus = 'all';
 
+  // ✅ Notifications
+  notifCount     = 0;
+  notifications: any[] = [];
+  showNotifPanel = false;
+  private notifSub?: Subscription;
+
   constructor(
-    private authService: AuthService,
-    private http:        HttpClient,
-    private cdr:         ChangeDetectorRef
+    private authService:     AuthService,
+    private http:            HttpClient,
+    private cdr:             ChangeDetectorRef,
+    private firebaseService: FirebaseNotificationService,
+    public langService: LanguageService,
   ) {}
 
   ngOnInit() {
+    // ✅ Subscribe au BehaviorSubject partagé
+    this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
+      this.notifications = notifs;
+      this.notifCount    = this.firebaseService.getUnreadCount();
+      this.cdr.detectChanges();
+    });
+
     const user = this.authService.getUser();
     if (!user?.email) {
       this.isLoading = false;
@@ -40,39 +58,53 @@ export class MyClaims implements OnInit {
     this.fullName = user.fullName || '';
     this.role     = user.role     || '';
 
-    // ✅ Récupère l'ID numérique depuis auth_db par email
     this.http.get<any>(
       `http://localhost:8080/api/auth/profile/email/${user.email}`
     ).subscribe({
       next: (profile) => {
-        // ✅ Photo de profil
         if (profile.profileImage) {
           this.profileImage =
             `http://localhost:8080/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
         }
         this.fullName = profile.fullName || user.fullName;
-
-        // ✅ Charge sinistres avec ID numérique
         this.loadClaims(profile.id, user.email);
       },
       error: () => {
-        // Fallback — filtre par email
         this.loadClaims(null, user.email);
       }
     });
   }
 
+  ngOnDestroy() {
+    this.notifSub?.unsubscribe();
+  }
+
+  // ✅ Toggle panel
+ toggleNotifPanel() {
+  this.showNotifPanel = !this.showNotifPanel;
+  if (this.showNotifPanel) {
+    this.notifCount = 0;
+    this.firebaseService.markAsSeen(); // ← AJOUTER
+  }
+}
+
+  // ✅ Effacer notifications
+  clearNotifications() {
+    this.firebaseService.clearNotifications();
+    this.showNotifPanel = false;
+  }
+toggleLang() {
+  this.langService.toggle();
+}
   loadClaims(clientId: number | null, email: string): void {
     this.isLoading = true;
 
-    // ✅ Si on a l'ID numérique → endpoint optimisé
     const url = clientId
       ? `http://localhost:8080/api/claims/client/${clientId}`
       : `http://localhost:8080/api/claims`;
 
     this.http.get<any[]>(url).subscribe({
       next: (data: any[]) => {
-        // Si pas d'ID → filtre par email
         this.claims = clientId
           ? data
           : data.filter(c => c.clientEmail === email);
@@ -102,8 +134,8 @@ export class MyClaims implements OnInit {
       const status = claim.status      || '';
 
       const matchesSearch =
-        ref.toLowerCase().includes(this.searchQuery.toLowerCase())   ||
-        desc.toLowerCase().includes(this.searchQuery.toLowerCase())  ||
+        ref.toLowerCase().includes(this.searchQuery.toLowerCase())  ||
+        desc.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         type.toLowerCase().includes(this.searchQuery.toLowerCase());
 
       const matchesStatus =
@@ -168,19 +200,6 @@ export class MyClaims implements OnInit {
       'OTHER':    'Autre'
     };
     return map[type] || type;
-  }
-
-  getIaScoreColor(score: number): string {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  }
-
-  getProgressColor(percentage: number): string {
-    if (percentage >= 75) return 'bg-green-500';
-    if (percentage >= 50) return 'bg-blue-500';
-    if (percentage >= 25) return 'bg-yellow-500';
-    return 'bg-gray-400';
   }
 
   logout(): void {

@@ -6,10 +6,13 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Subscription } from 'rxjs';
 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { LanguageService } from '../../../core/services/language.service';
+
 @Component({
   selector: 'app-review',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule,TranslateModule],
   templateUrl: './review.html',
   styleUrls: ['./review.css']
 })
@@ -40,7 +43,9 @@ export class ReviewComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private http:        HttpClient,
     private cdr:         ChangeDetectorRef,
-    private route:       ActivatedRoute
+    private route:       ActivatedRoute,
+    private translate:        TranslateService, // ← AJOUTER
+    public  langService:      LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -50,7 +55,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.paramsSub = this.route.queryParams.subscribe(params => {
       const claimId = params['claimId'];
 
-      // ✅ Reset complet avant chaque navigation
       this.showReviewModal     = false;
       this.selectedReviewClaim = null;
       this.reviews             = [];
@@ -119,6 +123,10 @@ export class ReviewComponent implements OnInit, OnDestroy {
       }
     });
   }
+toggleLang() {
+    this.langService.toggle();
+    this.cdr.detectChanges(); // ← force le recalcul des getters
+  }
 
   // ── Charge reviews + enrichit + ouvre modal ───
   loadReviewsAndOpen(claimId: number): void {
@@ -128,61 +136,72 @@ export class ReviewComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.reviews   = data;
           this.isLoading = false;
+          
+                 console.log('Toutes les reviews claimIds:', data.map(r => r.claimId));
+        console.log('Cherche claimId:', claimId, typeof claimId);
+        console.log('Match strict:', data.find(r => r.claimId === claimId));
+        console.log('Match loose:', data.find(r => r.claimId == claimId));
 
-          // ✅ Enrichit AVANT d'ouvrir le modal
-          this.http.get<any[]>(
-            'http://localhost:8080/api/orchestrator/workflows'
-          ).subscribe({
-            next: (workflows: any[]) => {
-              const workflowMap = new Map(
-                workflows.map(w => [w.claimId, w])
-              );
 
-              this.reviews = this.reviews.map(review => {
-                const wf = workflowMap.get(review.claimId);
-                if (wf) {
-                  return {
-                    ...review,
-                    overallScore:      wf.overallScore      || review.overallScore,
-                    humanReviewReason: wf.humanReviewReason || review.humanReviewReason,
-                    fraudType:         wf.fraudType         || review.fraudType
-                  };
+
+
+
+
+          // ✅ Logs debug
+          console.log('Toutes les reviews:', data.map(r => ({
+            id: r.id, claimId: r.claimId, status: r.status
+          })));
+          console.log('Cherche claimId:', claimId, typeof claimId);
+          const foundDirect = data.find(r => r.claimId == claimId);
+          console.log('Review trouvée directement:', foundDirect);
+
+          this.http.get<any[]>('http://localhost:8080/api/orchestrator/workflows')
+            .subscribe({
+              next: (workflows: any[]) => {
+                const workflowMap = new Map(
+                  workflows.map(w => [w.claimId, w])
+                );
+
+                this.reviews = this.reviews.map(review => {
+                  const wf = workflowMap.get(review.claimId);
+                  if (wf) {
+                    return {
+                      ...review,
+                      overallScore:      wf.overallScore      || review.overallScore,
+                      humanReviewReason: wf.humanReviewReason || review.humanReviewReason,
+                      fraudType:         wf.fraudType         || review.fraudType
+                    };
+                  }
+                  return review;
+                });
+
+                this.applyFilters();
+                this.cdr.detectChanges();
+
+                // ✅ Cherche la review par claimId
+                const review = this.reviews.find(r => r.claimId == claimId);
+                console.log('Review après enrichissement:', review);
+
+                if (review) {
+                  this.openReviewModal(review);
+                } else {
+                  this.openReviewModalByClaimId(claimId);
                 }
-                return review;
-              });
-
-              this.applyFilters();
-              this.cdr.detectChanges();
-
-              // ✅ Cherche la review enrichie
-              const review = this.reviews.find(
-                r => r.claimId == claimId
-              );
-
-              if (review) {
-                this.openReviewModal(review);
-              } else {
-                this.openReviewModalByClaimId(claimId);
+              },
+              error: () => {
+                this.applyFilters();
+                const review = this.reviews.find(r => r.claimId == claimId);
+                if (review) {
+                  this.openReviewModal(review);
+                } else {
+                  this.openReviewModalByClaimId(claimId);
+                }
+                this.cdr.detectChanges();
               }
-            },
-            error: () => {
-              // Orchestrator inaccessible → ouvre quand même
-              this.applyFilters();
-              const review = this.reviews.find(
-                r => r.claimId == claimId
-              );
-              if (review) {
-                this.openReviewModal(review);
-              } else {
-                this.openReviewModalByClaimId(claimId);
-              }
-              this.cdr.detectChanges();
-            }
-          });
+            });
         },
         error: () => {
           this.isLoading = false;
-          // Si humanloop inaccessible → charge directement via claimId
           this.openReviewModalByClaimId(claimId);
           this.cdr.detectChanges();
         }
@@ -216,7 +235,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
               incidentLocation:   claim.incidentLocation  || null,
               description:        claim.description       || null,
               policyNumber:       claim.policyNumber      || null,
-              // ✅ Données orchestrator prioritaires
               overallScore:       workflow.overallScore       || review.overallScore,
               humanReviewReason:  workflow.humanReviewReason  || review.humanReviewReason,
               fraudType:          workflow.fraudType          || review.fraudType,
@@ -227,6 +245,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
               estimatedCostMax:   workflow.estimatedCostMax   || null,
               estimationSeverity: workflow.estimationSeverity || null
             };
+            console.log('selectedReviewClaim final:', this.selectedReviewClaim);
             this.cdr.detectChanges();
           },
           error: () => {
@@ -252,65 +271,43 @@ export class ReviewComponent implements OnInit, OnDestroy {
 
   // ── Ouvre modal directement via claimId ───────
   openReviewModalByClaimId(claimId: number): void {
-    this.http.get<any>(
-      `http://localhost:8080/api/claims/${claimId}`
-    ).subscribe({
-      next: (claim: any) => {
-        this.http.get<any>(
-          `http://localhost:8080/api/orchestrator/workflow/${claimId}`
-        ).subscribe({
-          next: (workflow: any) => {
-            this.selectedReviewClaim = {
-              claimId:            claimId,
-              claimReference:     claim.reference,
-              claimType:          claim.claimType,
-              policyNumber:       claim.policyNumber,
-              description:        claim.description,
-              incidentLocation:   claim.incidentLocation,
-              incidentDate:       claim.incidentDate,
-              photoUrls:          claim.photoUrls    || [],
-              vehicleBrand:       claim.vehicleBrand || null,
-              vehicleModel:       claim.vehicleModel || null,
-              vehicleYear:        claim.vehicleYear  || null,
-              clientEmail:        claim.clientEmail  || null,
-              createdAt:          claim.createdAt,
-              overallScore:       workflow.overallScore      || 0,
-              humanReviewReason:  workflow.humanReviewReason || '',
-              fraudType:          workflow.fraudType         || '',
-              fraudScore:         workflow.fraudScore        || 0,
-              fraudDetected:      workflow.fraudDetected     || false,
-              contractDecision:   workflow.contractDecision  || null,
-              estimatedCostMin:   workflow.estimatedCostMin  || null,
-              estimatedCostMax:   workflow.estimatedCostMax  || null,
-              estimationSeverity: workflow.estimationSeverity|| null
-            };
-            this.showReviewModal = true;
-            this.cdr.detectChanges();
-          },
-          error: () => {
-            this.selectedReviewClaim = {
-              claimId:          claimId,
-              claimReference:   claim.reference,
-              claimType:        claim.claimType,
-              policyNumber:     claim.policyNumber,
-              description:      claim.description,
-              incidentLocation: claim.incidentLocation,
-              incidentDate:     claim.incidentDate,
-              photoUrls:        claim.photoUrls || [],
-              vehicleBrand:     claim.vehicleBrand || null,
-              vehicleModel:     claim.vehicleModel || null,
-              vehicleYear:      claim.vehicleYear  || null,
-              clientEmail:      claim.clientEmail  || null,
-              createdAt:        claim.createdAt,
-              overallScore:     0
-            };
-            this.showReviewModal = true;
-            this.cdr.detectChanges();
+    this.http.get<any[]>('http://localhost:8080/api/humanloop/all')
+      .subscribe({
+        next: (reviews) => {
+          const existingReview = reviews.find(r => r.claimId == claimId);
+          console.log('openReviewModalByClaimId — existingReview:', existingReview);
+
+          if (existingReview) {
+            this.openReviewModal(existingReview);
+          } else {
+            this.http.get<any>(`http://localhost:8080/api/claims/${claimId}`)
+              .subscribe({
+                next: (claim: any) => {
+                  this.selectedReviewClaim = {
+                    claimId:          claimId,
+                    claimReference:   claim.reference,
+                    claimType:        claim.claimType,
+                    policyNumber:     claim.policyNumber,
+                    description:      claim.description,
+                    incidentLocation: claim.incidentLocation,
+                    incidentDate:     claim.incidentDate,
+                    photoUrls:        claim.photoUrls    || [],
+                    vehicleBrand:     claim.vehicleBrand || null,
+                    vehicleModel:     claim.vehicleModel || null,
+                    vehicleYear:      claim.vehicleYear  || null,
+                    clientEmail:      claim.clientEmail  || null,
+                    createdAt:        claim.createdAt,
+                    overallScore:     0
+                  };
+                  this.showReviewModal = true;
+                  this.cdr.detectChanges();
+                },
+                error: () => this.cdr.detectChanges()
+              });
           }
-        });
-      },
-      error: () => this.cdr.detectChanges()
-    });
+        },
+        error: () => this.cdr.detectChanges()
+      });
   }
 
   closeReviewModal(): void {
@@ -376,11 +373,22 @@ export class ReviewComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const reviewId = this.selectedReviewClaim?.id;
+    console.log('makeDecision — reviewId:', reviewId, 'selectedReviewClaim:', this.selectedReviewClaim);
+
+    if (!reviewId) {
+      this.showToastMessage(
+        '❌ Aucune review humanloop pour ce sinistre !',
+        'error'
+      );
+      return;
+    }
+
     this.decisionLoading = true;
     this.cdr.detectChanges();
 
     this.http.post<any>(
-      `http://localhost:8080/api/humanloop/${this.selectedReviewClaim.id}/decision`,
+      `http://localhost:8080/api/humanloop/${reviewId}/decision`,
       {
         reviewerName:    this.fullName,
         finalDecision:   finalDecision,
@@ -408,7 +416,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ── Ouvrir photo ──────────────────────────────
   openPhoto(url: string): void {
     window.open(url, '_blank');
   }

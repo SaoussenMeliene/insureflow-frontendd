@@ -1,18 +1,22 @@
-import { Component, OnInit,ChangeDetectorRef  } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { FirebaseNotificationService } from '../../../core/services/firebase.service';
+import { Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';                              // ← AJOUTER
+import { LanguageService } from '../../../core/services/language.service'; 
 
 @Component({
   selector: 'app-declare-claim',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './declare-claim.html',
   styleUrl: './declare-claim.css',
 })
-export class DeclareClaim implements OnInit {
+export class DeclareClaim implements OnInit, OnDestroy {
   currentStep  = 1;
   stepTitles   = ['Informations de base', 'Détails du sinistre', 'Informations du véhicule', 'Récapitulatif'];
   submitted    = false;
@@ -21,6 +25,12 @@ export class DeclareClaim implements OnInit {
   profileImage = '';
   claimPhotos: File[]   = [];
   previews:    string[] = [];
+
+  // ✅ Notifications
+  notifCount     = 0;
+  notifications: any[] = [];
+  showNotifPanel = false;
+  private notifSub?: Subscription;
 
   form = {
     policyNumber:        '',
@@ -38,11 +48,11 @@ export class DeclareClaim implements OnInit {
   };
 
   claimTypes = [
-    { key: 'AUTO',   label: 'Accident automobile', icon: 'car',    description: 'Collision ou accident routier' },
-    { key: 'HOME',   label: 'Dégâts habitation',   icon: 'house',  description: 'Dommages causés à des biens' },
-    { key: 'HEALTH', label: 'Blessure / Santé',    icon: 'heart',  description: 'Sinistre corporel' },
-    { key: 'SCOLAIRE', label: 'Multirisques Scolaire', icon: 'school',  description: 'Incendie, RC, accidents élèves' },
-    { key: 'OTHER',    label: 'Autre sinistre',         icon: 'other',   description: 'Vol, incendie, autre' }
+    { key: 'AUTO',     label: 'Accident automobile',    icon: 'car',    description: 'Collision ou accident routier' },
+    { key: 'HOME',     label: 'Dégâts habitation',      icon: 'house',  description: 'Dommages causés à des biens' },
+    { key: 'HEALTH',   label: 'Blessure / Santé',       icon: 'heart',  description: 'Sinistre corporel' },
+    { key: 'SCOLAIRE', label: 'Multirisques Scolaire',  icon: 'school', description: 'Incendie, RC, accidents élèves' },
+    { key: 'OTHER',    label: 'Autre sinistre',          icon: 'other',  description: 'Vol, incendie, autre' }
   ];
 
   vehicleCategories = [
@@ -53,17 +63,25 @@ export class DeclareClaim implements OnInit {
   ];
 
   constructor(
-    private http:        HttpClient,
-    private router:      Router,
-    private authService: AuthService,
-    private cdr:         ChangeDetectorRef
+    private http:            HttpClient,
+    private router:          Router,
+    private authService:     AuthService,
+    private cdr:             ChangeDetectorRef,
+    private firebaseService: FirebaseNotificationService,
+    public langService: LanguageService,
   ) {
-    // ✅ Charge la photo depuis localStorage immédiatement
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.profileImage = user.profileImage || '';
   }
 
- ngOnInit() {
+  ngOnInit() {
+    // ✅ Subscribe au BehaviorSubject partagé
+    this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
+      this.notifications = notifs;
+      this.notifCount    = this.firebaseService.getUnreadCount();
+      this.cdr.detectChanges();
+    });
+
     const user = this.authService.getUser();
     if (!user?.email) return;
 
@@ -88,7 +106,7 @@ export class DeclareClaim implements OnInit {
             profileImage: this.profileImage
           }));
 
-          this.cdr.detectChanges();  // ✅ AJOUTER
+          this.cdr.detectChanges();
         }
       },
       error: () => {
@@ -96,6 +114,31 @@ export class DeclareClaim implements OnInit {
       }
     });
   }
+
+  ngOnDestroy() {
+    this.notifSub?.unsubscribe();
+  }
+
+  // ✅ Toggle panel
+toggleNotifPanel() {
+  this.showNotifPanel = !this.showNotifPanel;
+  if (this.showNotifPanel) {
+    this.notifCount = 0;
+    this.firebaseService.markAsSeen(); // ← AJOUTER
+  }
+}
+
+  // ✅ Effacer notifications
+  clearNotifications() {
+    this.firebaseService.clearNotifications();
+    this.showNotifPanel = false;
+  }
+
+ toggleLang() {
+  this.langService.toggle();
+}
+
+
   selectClaimType(type: string) {
     this.form.claimType = type;
   }
