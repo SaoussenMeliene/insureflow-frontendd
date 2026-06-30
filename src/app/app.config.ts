@@ -22,7 +22,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
       config: {
-        url:      'http://localhost:8180',
+        url:      'https://insureflow-keycloak.onrender.com',
         realm:    'insureflow',
         clientId: 'angular-app'
       },
