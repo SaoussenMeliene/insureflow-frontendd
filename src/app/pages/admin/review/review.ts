@@ -5,14 +5,15 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Subscription } from 'rxjs';
-
-import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/services/language.service';
+import { AdminSidebarComponent } from '../../../shared/components/admin-sidebar/admin-sidebar.component';
+import { environment } from '../../../../environments/environment'; // ← AJOUTÉ
 
 @Component({
   selector: 'app-review',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule,TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule, AdminSidebarComponent],
   templateUrl: './review.html',
   styleUrls: ['./review.css']
 })
@@ -36,16 +37,18 @@ export class ReviewComponent implements OnInit, OnDestroy {
   toastMessage = '';
   toastType    = '';
   showToast    = false;
+  sidebarCollapsed = false;
 
   private paramsSub?: Subscription;
+  private api = environment.apiUrl; // ← AJOUTÉ
 
   constructor(
     private authService: AuthService,
     private http:        HttpClient,
     private cdr:         ChangeDetectorRef,
     private route:       ActivatedRoute,
-    private translate:        TranslateService, // ← AJOUTER
-    public  langService:      LanguageService,
+    private translate:   TranslateService,
+    public  langService: LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +57,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
 
     this.paramsSub = this.route.queryParams.subscribe(params => {
       const claimId = params['claimId'];
-
       this.showReviewModal     = false;
       this.selectedReviewClaim = null;
       this.reviews             = [];
@@ -74,10 +76,9 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.paramsSub?.unsubscribe();
   }
 
-  // ── Charge les reviews ────────────────────────
   loadReviews(): void {
     this.isLoading = true;
-    this.http.get<any[]>('http://localhost:8080/api/humanloop/all')
+    this.http.get<any[]>(`${this.api}/api/humanloop/all`) // ← CORRIGÉ
       .subscribe({
         next: (data) => {
           this.reviews   = data;
@@ -91,16 +92,14 @@ export class ReviewComponent implements OnInit, OnDestroy {
       });
   }
 
-  // ── Enrichit reviews avec données orchestrator ─
   enrichReviewsWithWorkflow(): void {
     this.http.get<any[]>(
-      'http://localhost:8080/api/orchestrator/workflows'
+      `${this.api}/api/orchestrator/workflows` // ← CORRIGÉ
     ).subscribe({
       next: (workflows: any[]) => {
         const workflowMap = new Map(
           workflows.map(w => [w.claimId, w])
         );
-
         this.reviews = this.reviews.map(review => {
           const wf = workflowMap.get(review.claimId);
           if (wf) {
@@ -113,7 +112,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
           }
           return review;
         });
-
         this.applyFilters();
         this.cdr.detectChanges();
       },
@@ -123,45 +121,37 @@ export class ReviewComponent implements OnInit, OnDestroy {
       }
     });
   }
-toggleLang() {
+
+  toggleLang() {
     this.langService.toggle();
-    this.cdr.detectChanges(); // ← force le recalcul des getters
+    this.cdr.detectChanges();
   }
 
-  // ── Charge reviews + enrichit + ouvre modal ───
   loadReviewsAndOpen(claimId: number): void {
     this.isLoading = true;
-    this.http.get<any[]>('http://localhost:8080/api/humanloop/all')
+    this.http.get<any[]>(`${this.api}/api/humanloop/all`) // ← CORRIGÉ
       .subscribe({
         next: (data) => {
           this.reviews   = data;
           this.isLoading = false;
-          
-                 console.log('Toutes les reviews claimIds:', data.map(r => r.claimId));
-        console.log('Cherche claimId:', claimId, typeof claimId);
-        console.log('Match strict:', data.find(r => r.claimId === claimId));
-        console.log('Match loose:', data.find(r => r.claimId == claimId));
 
-
-
-
-
-
-          // ✅ Logs debug
+          console.log('Toutes les reviews claimIds:', data.map(r => r.claimId));
+          console.log('Cherche claimId:', claimId, typeof claimId);
+          console.log('Match strict:', data.find(r => r.claimId === claimId));
+          console.log('Match loose:', data.find(r => r.claimId == claimId));
           console.log('Toutes les reviews:', data.map(r => ({
             id: r.id, claimId: r.claimId, status: r.status
           })));
-          console.log('Cherche claimId:', claimId, typeof claimId);
+
           const foundDirect = data.find(r => r.claimId == claimId);
           console.log('Review trouvée directement:', foundDirect);
 
-          this.http.get<any[]>('http://localhost:8080/api/orchestrator/workflows')
+          this.http.get<any[]>(`${this.api}/api/orchestrator/workflows`) // ← CORRIGÉ
             .subscribe({
               next: (workflows: any[]) => {
                 const workflowMap = new Map(
                   workflows.map(w => [w.claimId, w])
                 );
-
                 this.reviews = this.reviews.map(review => {
                   const wf = workflowMap.get(review.claimId);
                   if (wf) {
@@ -174,11 +164,9 @@ toggleLang() {
                   }
                   return review;
                 });
-
                 this.applyFilters();
                 this.cdr.detectChanges();
 
-                // ✅ Cherche la review par claimId
                 const review = this.reviews.find(r => r.claimId == claimId);
                 console.log('Review après enrichissement:', review);
 
@@ -208,7 +196,6 @@ toggleLang() {
       });
   }
 
-  // ── Ouvrir modal — charge claim + workflow ────
   openReviewModal(review: any): void {
     this.selectedReviewClaim = review;
     this.reviewerComment     = '';
@@ -217,11 +204,11 @@ toggleLang() {
     this.cdr.detectChanges();
 
     this.http.get<any>(
-      `http://localhost:8080/api/claims/${review.claimId}`
+      `${this.api}/api/claims/${review.claimId}` // ← CORRIGÉ
     ).subscribe({
       next: (claim: any) => {
         this.http.get<any>(
-          `http://localhost:8080/api/orchestrator/workflow/${review.claimId}`
+          `${this.api}/api/orchestrator/workflow/${review.claimId}` // ← CORRIGÉ
         ).subscribe({
           next: (workflow: any) => {
             this.selectedReviewClaim = {
@@ -269,9 +256,8 @@ toggleLang() {
     });
   }
 
-  // ── Ouvre modal directement via claimId ───────
   openReviewModalByClaimId(claimId: number): void {
-    this.http.get<any[]>('http://localhost:8080/api/humanloop/all')
+    this.http.get<any[]>(`${this.api}/api/humanloop/all`) // ← CORRIGÉ
       .subscribe({
         next: (reviews) => {
           const existingReview = reviews.find(r => r.claimId == claimId);
@@ -280,7 +266,7 @@ toggleLang() {
           if (existingReview) {
             this.openReviewModal(existingReview);
           } else {
-            this.http.get<any>(`http://localhost:8080/api/claims/${claimId}`)
+            this.http.get<any>(`${this.api}/api/claims/${claimId}`) // ← CORRIGÉ
               .subscribe({
                 next: (claim: any) => {
                   this.selectedReviewClaim = {
@@ -316,7 +302,6 @@ toggleLang() {
     this.cdr.detectChanges();
   }
 
-  // ── Stats ─────────────────────────────────────
   get pendingCount(): number {
     return this.reviews.filter(r => r.status === 'PENDING').length;
   }
@@ -333,7 +318,6 @@ toggleLang() {
     return Math.round(sum / this.filteredClaims.length);
   }
 
-  // ── Filtres ───────────────────────────────────
   applyFilters(): void {
     let data = [...this.reviews];
     if (this.activeTab === 'pending') {
@@ -346,7 +330,6 @@ toggleLang() {
     this.cdr.detectChanges();
   }
 
-  // ── Filtre les URLs invalides ─────────────────
   getValidPhotos(photoUrls: any[]): string[] {
     if (!photoUrls || !Array.isArray(photoUrls)) return [];
     return photoUrls.filter(url =>
@@ -358,7 +341,6 @@ toggleLang() {
     );
   }
 
-  // ── Reconstruit la raison sans le score ───────
   getReason(claim: any): string {
     if (!claim?.humanReviewReason) return '—';
     return claim.humanReviewReason
@@ -366,7 +348,6 @@ toggleLang() {
       .trim() || claim.humanReviewReason;
   }
 
-  // ── Décision APPROVE / REJECT ─────────────────
   makeDecision(finalDecision: string): void {
     if (finalDecision === 'REJECT' && !this.rejectionMotif.trim()) {
       this.showToastMessage('Motif de rejet obligatoire !', 'error');
@@ -374,13 +355,10 @@ toggleLang() {
     }
 
     const reviewId = this.selectedReviewClaim?.id;
-    console.log('makeDecision — reviewId:', reviewId, 'selectedReviewClaim:', this.selectedReviewClaim);
+    console.log('makeDecision — reviewId:', reviewId);
 
     if (!reviewId) {
-      this.showToastMessage(
-        '❌ Aucune review humanloop pour ce sinistre !',
-        'error'
-      );
+      this.showToastMessage('❌ Aucune review humanloop pour ce sinistre !', 'error');
       return;
     }
 
@@ -388,7 +366,7 @@ toggleLang() {
     this.cdr.detectChanges();
 
     this.http.post<any>(
-      `http://localhost:8080/api/humanloop/${reviewId}/decision`,
+      `${this.api}/api/humanloop/${reviewId}/decision`, // ← CORRIGÉ
       {
         reviewerName:    this.fullName,
         finalDecision:   finalDecision,
@@ -420,7 +398,6 @@ toggleLang() {
     window.open(url, '_blank');
   }
 
-  // ── Helpers ───────────────────────────────────
   getFraudLabel(reason: string): string {
     if (!reason) return '';
     if (reason.includes('PRICE_INFLATION'))      return 'PRICE INFLATION';

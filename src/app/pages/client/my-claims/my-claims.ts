@@ -8,10 +8,14 @@ import { FirebaseNotificationService } from '../../../core/services/firebase.ser
 import { Subscription } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/services/language.service';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar.component';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { environment } from '../../../../environments/environment'; 
+
 @Component({
   selector: 'app-my-claims',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, SidebarComponent, HeaderComponent],
   templateUrl: './my-claims.html',
   styleUrls: ['./my-claims.css']
 })
@@ -27,22 +31,22 @@ export class MyClaims implements OnInit, OnDestroy {
   searchQuery  = '';
   filterStatus = 'all';
 
-  // ✅ Notifications
   notifCount     = 0;
   notifications: any[] = [];
   showNotifPanel = false;
   private notifSub?: Subscription;
+
+  private api = environment.apiUrl; // ← AJOUTÉ
 
   constructor(
     private authService:     AuthService,
     private http:            HttpClient,
     private cdr:             ChangeDetectorRef,
     private firebaseService: FirebaseNotificationService,
-    public langService: LanguageService,
+    public  langService:     LanguageService,
   ) {}
 
   ngOnInit() {
-    // ✅ Subscribe au BehaviorSubject partagé
     this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
       this.notifications = notifs;
       this.notifCount    = this.firebaseService.getUnreadCount();
@@ -59,12 +63,12 @@ export class MyClaims implements OnInit, OnDestroy {
     this.role     = user.role     || '';
 
     this.http.get<any>(
-      `http://localhost:8080/api/auth/profile/email/${user.email}`
+      `${this.api}/api/auth/profile/email/${user.email}` // ← CORRIGÉ
     ).subscribe({
       next: (profile) => {
         if (profile.profileImage) {
           this.profileImage =
-            `http://localhost:8080/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
+            `${this.api}/api/auth/profile-image/${profile.id}?t=${Date.now()}`; // ← CORRIGÉ
         }
         this.fullName = profile.fullName || user.fullName;
         this.loadClaims(profile.id, user.email);
@@ -79,29 +83,33 @@ export class MyClaims implements OnInit, OnDestroy {
     this.notifSub?.unsubscribe();
   }
 
-  // ✅ Toggle panel
- toggleNotifPanel() {
-  this.showNotifPanel = !this.showNotifPanel;
-  if (this.showNotifPanel) {
-    this.notifCount = 0;
-    this.firebaseService.markAsSeen(); // ← AJOUTER
+  toggleNotifPanel() {
+    this.showNotifPanel = !this.showNotifPanel;
+    if (this.showNotifPanel) {
+      this.notifCount = 0;
+      this.firebaseService.markAsSeen();
+    }
   }
-}
 
-  // ✅ Effacer notifications
   clearNotifications() {
     this.firebaseService.clearNotifications();
     this.showNotifPanel = false;
   }
-toggleLang() {
-  this.langService.toggle();
-}
+
+  toggleLang() {
+    this.langService.toggle();
+  }
+
+  countByStatus(status: string): number {
+    return this.filteredClaims.filter(c => c.status === status).length;
+  }
+
   loadClaims(clientId: number | null, email: string): void {
     this.isLoading = true;
 
     const url = clientId
-      ? `http://localhost:8080/api/claims/client/${clientId}`
-      : `http://localhost:8080/api/claims`;
+      ? `${this.api}/api/claims/client/${clientId}`  // ← CORRIGÉ
+      : `${this.api}/api/claims`;                    // ← CORRIGÉ
 
     this.http.get<any[]>(url).subscribe({
       next: (data: any[]) => {

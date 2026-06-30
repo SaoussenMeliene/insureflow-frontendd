@@ -1,24 +1,40 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { FirebaseNotificationService } from '../../../core/services/firebase.service';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';                              // ← AJOUTER
-import { LanguageService } from '../../../core/services/language.service'; 
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../core/services/language.service';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar.component';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-declare-claim',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule,
+    SidebarComponent,
+    HeaderComponent
+  ],
   templateUrl: './declare-claim.html',
   styleUrl: './declare-claim.css',
 })
 export class DeclareClaim implements OnInit, OnDestroy {
+
   currentStep  = 1;
-  stepTitles   = ['Informations de base', 'Détails du sinistre', 'Informations du véhicule', 'Récapitulatif'];
+  stepTitles   = [
+    'Informations de base',
+    'Détails du sinistre',
+    'Informations du véhicule',
+    'Récapitulatif'
+  ];
   submitted    = false;
   fullName     = '';
   role         = '';
@@ -26,11 +42,15 @@ export class DeclareClaim implements OnInit, OnDestroy {
   claimPhotos: File[]   = [];
   previews:    string[] = [];
 
-  // ✅ Notifications
   notifCount     = 0;
   notifications: any[] = [];
   showNotifPanel = false;
   private notifSub?: Subscription;
+
+  // ✅ Assistant IA
+  isGenerating = false;
+
+  private api = environment.apiUrl;
 
   form = {
     policyNumber:        '',
@@ -48,11 +68,11 @@ export class DeclareClaim implements OnInit, OnDestroy {
   };
 
   claimTypes = [
-    { key: 'AUTO',     label: 'Accident automobile',    icon: 'car',    description: 'Collision ou accident routier' },
-    { key: 'HOME',     label: 'Dégâts habitation',      icon: 'house',  description: 'Dommages causés à des biens' },
-    { key: 'HEALTH',   label: 'Blessure / Santé',       icon: 'heart',  description: 'Sinistre corporel' },
-    { key: 'SCOLAIRE', label: 'Multirisques Scolaire',  icon: 'school', description: 'Incendie, RC, accidents élèves' },
-    { key: 'OTHER',    label: 'Autre sinistre',          icon: 'other',  description: 'Vol, incendie, autre' }
+    { key: 'AUTO',     label: 'Accident automobile',   icon: 'car',    description: 'Collision ou accident routier' },
+    { key: 'HOME',     label: 'Dégâts habitation',     icon: 'house',  description: 'Dommages causés à des biens' },
+    { key: 'HEALTH',   label: 'Blessure / Santé',      icon: 'heart',  description: 'Sinistre corporel' },
+    { key: 'SCOLAIRE', label: 'Multirisques Scolaire', icon: 'school', description: 'Incendie, RC, accidents élèves' },
+    { key: 'OTHER',    label: 'Autre sinistre',         icon: 'other',  description: 'Vol, incendie, autre' }
   ];
 
   vehicleCategories = [
@@ -68,19 +88,20 @@ export class DeclareClaim implements OnInit, OnDestroy {
     private authService:     AuthService,
     private cdr:             ChangeDetectorRef,
     private firebaseService: FirebaseNotificationService,
-    public langService: LanguageService,
+    public  langService:     LanguageService,
   ) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.profileImage = user.profileImage || '';
   }
 
   ngOnInit() {
-    // ✅ Subscribe au BehaviorSubject partagé
-    this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
-      this.notifications = notifs;
-      this.notifCount    = this.firebaseService.getUnreadCount();
-      this.cdr.detectChanges();
-    });
+    this.notifSub = this.firebaseService.notifications$.subscribe(
+      (notifs: any[]) => {
+        this.notifications = notifs;
+        this.notifCount    = this.firebaseService.getUnreadCount();
+        this.cdr.detectChanges();
+      }
+    );
 
     const user = this.authService.getUser();
     if (!user?.email) return;
@@ -90,17 +111,19 @@ export class DeclareClaim implements OnInit, OnDestroy {
     this.form.clientEmail = user.email    || '';
 
     this.http.get<any>(
-      `http://localhost:8080/api/auth/profile/email/${user.email}`
+      `${this.api}/api/auth/profile/email/${user.email}`
     ).subscribe({
-      next: (profile) => {
+      next: (profile: any) => {
         this.form.clientId = String(profile.id || '');
         this.fullName      = profile.fullName || user.fullName;
 
         if (profile.profileImage) {
           this.profileImage =
-            `http://localhost:8080/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
+            `${this.api}/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
 
-          const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
+          const savedUser = JSON.parse(
+            localStorage.getItem('user') || '{}'
+          );
           localStorage.setItem('user', JSON.stringify({
             ...savedUser,
             profileImage: this.profileImage
@@ -119,25 +142,59 @@ export class DeclareClaim implements OnInit, OnDestroy {
     this.notifSub?.unsubscribe();
   }
 
-  // ✅ Toggle panel
-toggleNotifPanel() {
-  this.showNotifPanel = !this.showNotifPanel;
-  if (this.showNotifPanel) {
-    this.notifCount = 0;
-    this.firebaseService.markAsSeen(); // ← AJOUTER
+  // ════════════════════════════════════════════
+  // ✅ Assistant IA — améliore la description
+  // ════════════════════════════════════════════
+  generateDescription() {
+  if (!this.form.description ||
+      this.form.description.trim().length < 5) {
+    alert('Écris quelques mots d\'abord !');
+    return;
   }
+
+  this.isGenerating = true;
+
+  const token = this.authService.getToken();
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  });
+
+  // ✅ Utilise this.api
+  this.http.post<any>(
+    `${this.api}/api/claims/ai/improve`,
+    { description: this.form.description },
+    { headers }
+  ).subscribe({
+    next: (response: any) => {
+      this.form.description = response.description;
+      this.isGenerating = false;
+      this.cdr.detectChanges();
+    },
+    error: (err: any) => {
+      console.error('❌ Erreur IA:', err);
+      this.isGenerating = false;
+      this.cdr.detectChanges();
+    }
+  });
 }
 
-  // ✅ Effacer notifications
+  toggleNotifPanel() {
+    this.showNotifPanel = !this.showNotifPanel;
+    if (this.showNotifPanel) {
+      this.notifCount = 0;
+      this.firebaseService.markAsSeen();
+    }
+  }
+
   clearNotifications() {
     this.firebaseService.clearNotifications();
     this.showNotifPanel = false;
   }
 
- toggleLang() {
-  this.langService.toggle();
-}
-
+  toggleLang() {
+    this.langService.toggle();
+  }
 
   selectClaimType(type: string) {
     this.form.claimType = type;
@@ -166,7 +223,7 @@ toggleNotifPanel() {
   }
 
   private handleFiles(files: FileList) {
-    Array.from(files).forEach(file => {
+    Array.from(files).forEach((file: File) => {
       if (file.type.startsWith('image/')) {
         this.claimPhotos.push(file);
         const reader = new FileReader();
@@ -188,10 +245,25 @@ toggleNotifPanel() {
 
   validateCurrentStep(): boolean {
     switch (this.currentStep) {
-      case 1: return !!(this.form.policyNumber.trim() && this.form.incidentDate && this.form.incidentLocation.trim());
-      case 2: return !!(this.form.description.trim() && this.form.clientId.trim() && this.form.clientEmail.trim() && this.form.clientEstimatedCost && this.form.claimType);
-      case 3: return this.claimPhotos.length > 0 && this.isVehicleInfoValid();
-      default: return false;
+      case 1:
+        return !!(
+          this.form.policyNumber.trim() &&
+          this.form.incidentDate &&
+          this.form.incidentLocation.trim()
+        );
+      case 2:
+        return !!(
+          this.form.description.trim() &&
+          this.form.clientId.trim() &&
+          this.form.clientEmail.trim() &&
+          this.form.clientEstimatedCost &&
+          this.form.claimType
+        );
+      case 3:
+        return this.claimPhotos.length > 0 &&
+               this.isVehicleInfoValid();
+      default:
+        return false;
     }
   }
 
@@ -245,35 +317,43 @@ toggleNotifPanel() {
       clientId:            String(this.form.clientId),
       clientEmail:         this.form.clientEmail,
       clientEstimatedCost: this.form.clientEstimatedCost
-                             ? parseFloat(this.form.clientEstimatedCost) : null,
+                             ? parseFloat(this.form.clientEstimatedCost)
+                             : null,
       vehicleBrand:        this.form.vehicleBrand,
       vehicleModel:        this.form.vehicleModel,
       vehicleYear:         this.form.vehicleYear
-                             ? parseInt(this.form.vehicleYear) : null,
+                             ? parseInt(this.form.vehicleYear)
+                             : null,
       vehicleCategory:     this.form.vehicleCategory,
       photoUrls:           []
     };
 
     formData.append('claim',
-      new Blob([JSON.stringify(claimData)], { type: 'application/json' })
+      new Blob(
+        [JSON.stringify(claimData)],
+        { type: 'application/json' }
+      )
     );
 
-    this.claimPhotos.forEach(photo => {
+    this.claimPhotos.forEach((photo: File) => {
       formData.append('photos', photo);
     });
 
-    this.http.post('http://localhost:8080/api/claims', formData)
-      .subscribe({
-        next: (response: any) => {
-          alert('Sinistre déclaré avec succès ! Référence : '
-            + (response.reference || response.id));
-          this.router.navigate(['/client/my-claims']);
-        },
-        error: (err: any) => {
-          console.error('Erreur:', err);
-          alert(err.error?.message || 'Erreur lors de la soumission du sinistre');
-        }
-      });
+    this.http.post(
+      `${this.api}/api/claims`,
+      formData
+    ).subscribe({
+      next: (response: any) => {
+        alert('Sinistre déclaré avec succès ! Référence : '
+          + (response.reference || response.id));
+        this.router.navigate(['/client/my-claims']);
+      },
+      error: (err: any) => {
+        console.error('Erreur:', err);
+        alert(err.error?.message ||
+          'Erreur lors de la soumission du sinistre');
+      }
+    });
   }
 
   logout(): void {

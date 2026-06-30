@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment'; // ← AJOUTÉ
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractService {
 
-  private apiUrl = 'http://localhost:8080/api/contract-rag';
+  private apiUrl = `${environment.apiUrl}/api/contract-rag`; // ← CORRIGÉ
 
   constructor(private http: HttpClient) {}
 

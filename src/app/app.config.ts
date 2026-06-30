@@ -4,11 +4,9 @@ import { provideHttpClient, withInterceptorsFromDi, HttpClient } from '@angular/
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { routes } from './app.routes';
 import { KeycloakService, KeycloakBearerInterceptor } from 'keycloak-angular';
-import { FirebaseNotificationService } from './core/services/firebase.service';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
-// ✅ Loader manuel sans TranslateHttpLoader
 export class ManualTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) {}
   getTranslation(lang: string): Observable<any> {
@@ -41,12 +39,6 @@ function initializeKeycloak(keycloak: KeycloakService) {
         '/api/auth/profile-image'
       ]
     });
-}
-
-function initializeFirebase(firebaseService: FirebaseNotificationService) {
-  return async () => {
-    await firebaseService.initNotifications();
-  };
 }
 
 export const appConfig: ApplicationConfig = {

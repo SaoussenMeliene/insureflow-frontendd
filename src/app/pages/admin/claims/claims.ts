@@ -5,13 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/services/language.service';
+import { AdminSidebarComponent } from '../../../shared/components/admin-sidebar/admin-sidebar.component';
+import { environment } from '../../../../environments/environment'; // ← AJOUTÉ
 
 @Component({
   selector: 'app-claims',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, AdminSidebarComponent],
   templateUrl: './claims.html',
   styleUrl: './claims.css'
 })
@@ -41,14 +43,18 @@ export class ClaimsComponent implements OnInit {
   toastMessage = '';
   toastType    = '';
   showToast    = false;
+  sidebarCollapsed = false;
+  pendingCount     = 0;
+
+  private api = environment.apiUrl; // ← AJOUTÉ
 
   constructor(
     private authService: AuthService,
     private http:        HttpClient,
     private cdr:         ChangeDetectorRef,
-    private router:      Router,  // ← AJOUTER
-    private translate:        TranslateService,
-   public  langService:      LanguageService,
+    private router:      Router,
+    private translate:   TranslateService,
+    public  langService: LanguageService,
   ) {}
 
   ngOnInit() {
@@ -59,7 +65,7 @@ export class ClaimsComponent implements OnInit {
 
   loadClaims() {
     this.isLoading = true;
-    this.http.get<any[]>('http://localhost:8080/api/claims')
+    this.http.get<any[]>(`${this.api}/api/claims`) // ← CORRIGÉ
       .subscribe({
         next: (data: any[]) => {
           this.claims = data.sort((a, b) =>
@@ -72,10 +78,12 @@ export class ClaimsComponent implements OnInit {
         error: () => { this.isLoading = false; }
       });
   }
-toggleLang() {
+
+  toggleLang() {
     this.langService.toggle();
-    this.cdr.detectChanges(); // ← force le recalcul des getters
+    this.cdr.detectChanges();
   }
+
   get filteredClaims(): any[] {
     return this.claims.filter(c => {
       const matchSearch = !this.searchQuery ||
@@ -87,7 +95,6 @@ toggleLang() {
     });
   }
 
-  // ── Confirmation ─────────────────────────────
   openConfirm(claim: any) {
     this.selectedClaim  = claim;
     this.showConfirm    = true;
@@ -101,7 +108,6 @@ toggleLang() {
     this.cdr.detectChanges();
   }
 
-  // ── Pipeline ─────────────────────────────────
   confirmPipeline() {
     this.showConfirm     = false;
     this.showPipeline    = true;
@@ -121,7 +127,7 @@ toggleLang() {
 
     this.animateSteps(() => {
       this.http.post<any>(
-        'http://localhost:8080/api/orchestrator/process',
+        `${this.api}/api/orchestrator/process`, // ← CORRIGÉ
         {
           claimId:             this.selectedClaim.id,
           reference:           this.selectedClaim.reference,
@@ -197,7 +203,6 @@ toggleLang() {
     this.cdr.detectChanges();
   }
 
-  // ── Voir résultat pipeline existant ──────────
   viewPipelineResult(claim: any) {
     this.selectedClaim   = claim;
     this.showPipeline    = true;
@@ -213,10 +218,9 @@ toggleLang() {
     this.cdr.detectChanges();
 
     this.http.get<any>(
-      `http://localhost:8080/api/orchestrator/workflow/${claim.id}`
+      `${this.api}/api/orchestrator/workflow/${claim.id}` // ← CORRIGÉ
     ).subscribe({
       next: (result: any) => {
-        // ✅ Utilise le statut réel du claim
         result.workflowStatus = claim.status;
         this.pipelineResult  = result;
         this.pipelineLoading = false;
@@ -250,7 +254,6 @@ toggleLang() {
     });
   }
 
-  // ── Décision Admin ───────────────────────────
   makeDecision(finalDecision: string) {
     if (finalDecision === 'REJECT' && !this.rejectionMotif.trim()) {
       this.showToastMessage('Motif de rejet obligatoire !', 'error');
@@ -271,7 +274,7 @@ toggleLang() {
     }
 
     this.http.post<any>(
-      `http://localhost:8080/api/humanloop/${reviewId}/decision`,
+      `${this.api}/api/humanloop/${reviewId}/decision`, // ← CORRIGÉ
       {
         reviewerName:    this.fullName,
         finalDecision:   finalDecision,
@@ -306,24 +309,18 @@ toggleLang() {
     this.selectedClaim  = null;
     this.cdr.detectChanges();
   }
-// ── Aller vers révision ───────────────────────
-goToReview() {
-  const claimId = this.selectedClaim?.id;
 
-  this.showPipeline   = false;
-  this.pipelineResult = null;
-  this.selectedClaim  = null;
-  this.cdr.detectChanges();
+  goToReview() {
+    const claimId = this.selectedClaim?.id;
+    this.showPipeline   = false;
+    this.pipelineResult = null;
+    this.selectedClaim  = null;
+    this.cdr.detectChanges();
+    this.router.navigate(['/admin/review'], {
+      queryParams: { claimId: claimId, t: Date.now() }
+    });
+  }
 
-  // ✅ Navigate avec timestamp pour forcer reload
-  this.router.navigate(['/admin/review'], {
-    queryParams: {
-      claimId: claimId,
-      t:       Date.now()
-    }
-  });
-}
-  // ── Toast ────────────────────────────────────
   showToastMessage(message: string, type: string) {
     this.toastMessage = message;
     this.toastType    = type;
@@ -335,7 +332,6 @@ goToReview() {
     }, 4000);
   }
 
-  // ── Helpers ──────────────────────────────────
   getStatusClass(status: string): string {
     const map: { [k: string]: string } = {
       'SUBMITTED':      'bg-blue-100 text-blue-700',

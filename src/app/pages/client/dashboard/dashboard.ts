@@ -6,13 +6,16 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { FirebaseNotificationService } from '../../../core/services/firebase.service';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';                              // ← AJOUTER
-import { LanguageService } from '../../../core/services/language.service';           // ← AJOUTER
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../core/services/language.service';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar.component';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { environment } from '../../../../environments/environment'; // ← AJOUTÉ
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule],  // ← AJOUTER TranslateModule
+  imports: [CommonModule, RouterModule, TranslateModule, SidebarComponent, HeaderComponent],
   templateUrl: './dashboard.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
@@ -27,18 +30,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
   showNotifPanel = false;
   private notifSub?: Subscription;
 
+  private api = environment.apiUrl; // ← AJOUTÉ
+
   stats = [
     { title: 'Sinistres déclarés', value: 0, bgClass: 'bg-blue-100',   iconClass: 'text-blue-600',   icon: 'clipboard-list' },
     { title: 'En attente',         value: 0, bgClass: 'bg-yellow-100', iconClass: 'text-yellow-600', icon: 'clock' },
     { title: 'En révision',        value: 0, bgClass: 'bg-orange-100', iconClass: 'text-orange-600', icon: 'clock' },
-    { title: 'Approuvés',          value: 0, bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'document-check' }
+    { title: 'Approuvés',          value: 0, bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'document-check' },
+    { title: 'Rejetés',            value: 0, bgClass: 'bg-red-100',    iconClass: 'text-red-600',    icon: 'x' }
   ];
 
   contracts = [
     { type: 'Automobile', typeKey: 'AUTO',     count: 0, bgClass: 'bg-red-100',    iconClass: 'text-red-600',    icon: 'car' },
     { type: 'Habitation', typeKey: 'HOME',     count: 0, bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'house' },
     { type: 'Santé',      typeKey: 'HEALTH',   count: 0, bgClass: 'bg-pink-100',   iconClass: 'text-pink-600',   icon: 'heart' },
-    { type: 'Autres',     typeKey: 'OTHER',    count: 0, bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' }
+    { type: 'Scolaire',   typeKey: 'SCOLAIRE', count: 0, bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' },
+    { type: 'Autres',     typeKey: 'OTHER',    count: 0, bgClass: 'bg-orange-100', iconClass: 'text-orange-600', icon: 'other' }
   ];
 
   quickActions = [
@@ -54,7 +61,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private http:            HttpClient,
     private cdr:             ChangeDetectorRef,
     private firebaseService: FirebaseNotificationService,
-    public  langService:     LanguageService,   // ← OK maintenant car importé
+    public  langService:     LanguageService,
   ) {
     this.fullName = this.authService.getFullName() || 'Utilisateur';
     this.role     = this.authService.getRole()     || 'CLIENT';
@@ -74,13 +81,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     this.http.get<any>(
-      `http://localhost:8080/api/auth/profile/email/${user.email}`
+      `${this.api}/api/auth/profile/email/${user.email}` // ← CORRIGÉ
     ).subscribe({
       next: (profile) => {
         this.fullName = profile.fullName || user.fullName;
         if (profile.profileImage) {
           this.profileImage =
-            `http://localhost:8080/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
+            `${this.api}/api/auth/profile-image/${profile.id}?t=${Date.now()}`; // ← CORRIGÉ
         }
         this.loadDashboardData(profile.id);
       },
@@ -115,7 +122,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   loadDashboardData(clientId: number): void {
     this.isLoading = true;
-    this.http.get<any[]>(`http://localhost:8080/api/claims/client/${clientId}`)
+    this.http.get<any[]>(`${this.api}/api/claims/client/${clientId}`) // ← CORRIGÉ
       .subscribe({
         next: (claims) => {
           this.stats = [
@@ -132,14 +139,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
             { title: 'Approuvés',
               value: claims.filter(c =>
                 c.status === 'APPROVED' || c.status === 'COMPLETED').length,
-              bgClass: 'bg-green-100', iconClass: 'text-green-600', icon: 'document-check' }
+              bgClass: 'bg-green-100', iconClass: 'text-green-600', icon: 'document-check' },
+            { title: 'Rejetés',
+              value: claims.filter(c => c.status === 'REJECTED').length,
+              bgClass: 'bg-red-100', iconClass: 'text-red-600', icon: 'x' }
           ];
 
           this.contracts = [
-            { type: 'Automobile', typeKey: 'AUTO',   count: claims.filter(c => c.claimType === 'AUTO').length,   bgClass: 'bg-red-100',    iconClass: 'text-red-600',    icon: 'car'    },
-            { type: 'Habitation', typeKey: 'HOME',   count: claims.filter(c => c.claimType === 'HOME').length,   bgClass: 'bg-green-100',  iconClass: 'text-green-600',  icon: 'house'  },
-            { type: 'Santé',      typeKey: 'HEALTH', count: claims.filter(c => c.claimType === 'HEALTH').length, bgClass: 'bg-pink-100',   iconClass: 'text-pink-600',   icon: 'heart'  },
-            { type: 'Autres',     typeKey: 'OTHER',  count: claims.filter(c => c.claimType === 'OTHER').length,  bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' }
+            { type: 'Automobile', typeKey: 'AUTO',
+              count: claims.filter(c => c.claimType === 'AUTO').length,
+              bgClass: 'bg-blue-100', iconClass: 'text-blue-600', icon: 'car' },
+            { type: 'Habitation', typeKey: 'HOME',
+              count: claims.filter(c => c.claimType === 'HOME').length,
+              bgClass: 'bg-green-100', iconClass: 'text-green-600', icon: 'house' },
+            { type: 'Santé', typeKey: 'HEALTH',
+              count: claims.filter(c => c.claimType === 'HEALTH').length,
+              bgClass: 'bg-pink-100', iconClass: 'text-pink-600', icon: 'heart' },
+            { type: 'Scolaire', typeKey: 'SCOLAIRE',
+              count: claims.filter(c => c.claimType === 'SCOLAIRE').length,
+              bgClass: 'bg-purple-100', iconClass: 'text-purple-600', icon: 'school' },
+            { type: 'Autres', typeKey: 'OTHER',
+              count: claims.filter(c => c.claimType === 'OTHER').length,
+              bgClass: 'bg-orange-100', iconClass: 'text-orange-600', icon: 'other' }
           ];
 
           this.recentClaims = [...claims.slice(0, 5)];
@@ -199,6 +220,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
       case 'EXPERT': return 'bg-amber-100 text-amber-700';
       default:       return 'bg-primary/10 text-primary';
     }
+  }
+
+  getActionBgClass(icon: string): string {
+    const map: { [k: string]: string } = {
+      'plus-circle':    'bg-purple-100',
+      'clipboard-list': 'bg-blue-100',
+      'document-check': 'bg-orange-100',
+      'user':           'bg-teal-100'
+    };
+    return map[icon] || 'bg-indigo-100';
+  }
+
+  getActionIconClass(icon: string): string {
+    const map: { [k: string]: string } = {
+      'plus-circle':    'text-purple-600',
+      'clipboard-list': 'text-blue-600',
+      'document-check': 'text-orange-600',
+      'user':           'text-teal-600'
+    };
+    return map[icon] || 'text-indigo-600';
   }
 
   logout(): void {

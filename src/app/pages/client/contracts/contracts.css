@@ -1,1 +1,7 @@
 /* Contracts page styles can be added here if needed */
+/* ── CONTRACT CARDS ── */
+.contract-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(79,70,229,0.12) !important;
+  border-color: #6366f1 !important;
+}

@@ -6,12 +6,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UserService, AppUser } from '../../../core/services/user';
 import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
 import { LanguageService } from '../../../core/services/language.service';
+import { AdminSidebarComponent } from '../../../shared/components/admin-sidebar/admin-sidebar.component';
 
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule,TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule,TranslateModule,AdminSidebarComponent],
   templateUrl: './users.html',
   styleUrls: ['./users.css']
 })
@@ -29,7 +30,8 @@ export class Users implements OnInit {
   selectedStatus = '';
 
   loading = true;
-
+  sidebarCollapsed = false;
+  pendingCount     = 0; 
   userStats = {
     total: 0,
     activeClients: 0,

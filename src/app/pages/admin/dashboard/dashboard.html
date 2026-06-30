@@ -1,260 +1,512 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+<div style="background:#f0f4ff;min-height:100vh;font-family:'DM Sans',sans-serif;">
 
-  <!-- Sidebar -->
-  <aside class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-indigo-100">
-    <div class="p-6 h-full flex flex-col">
+  <app-admin-sidebar
+    [pendingCount]="pendingCount"
+    (collapsedChange)="sidebarCollapsed = $event">
+  </app-admin-sidebar>
 
-      <div class="flex items-center gap-3 mb-8">
-        <img src="logo.png" alt="InsureFlow" class="h-10 w-auto object-contain" />
-      </div>
-
-      <div class="mb-6">
-        <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1
-                     text-xs font-semibold tracking-wide text-emerald-700 border border-emerald-100">
-          ADMIN
-        </span>
-      </div>
-
-      <nav class="space-y-2">
-        <a routerLink="/admin/dashboard" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
-          [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent
-                 text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 13h8V3H3v10zm10 8h8V3h-8v18zM3 21h8v-6H3v6z"/>
-          </svg>
-          {{ 'nav.overview' | translate }}
-        </a>
-
-        <a routerLink="/admin/claims" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
-          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent
-                 text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-          </svg>
-          {{ 'nav.claims' | translate }}
-        </a>
-
-        <a routerLink="/admin/review" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
-          class="flex items-center justify-between px-4 py-3 rounded-2xl border border-transparent
-                 text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
-          <span class="flex items-center gap-3">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            {{ 'nav.review' | translate }}
-          </span>
-        </a>
-
-        <a routerLink="/admin/users" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
-          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent
-                 text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17 20h5V4H2v16h5m10 0v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2m12 0H7m10-10a4 4 0 11-8 0 4 4 0 018 0z"/>
-          </svg>
-          {{ 'nav.users' | translate }}
-        </a>
-
-        <a routerLink="/admin/contracts" routerLinkActive="bg-indigo-50 text-indigo-700 border-indigo-200"
-          class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent
-                 text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition font-medium">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"/>
-          </svg>
-          {{ 'nav.contracts' | translate }}
-        </a>
-      </nav>
-
-      <div class="mt-auto pt-6 border-t border-slate-200">
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-11 h-11 rounded-full bg-indigo-100 flex items-center justify-center">
-              <span class="text-sm font-bold text-indigo-700">
-                {{ fullName ? fullName.charAt(0) : 'A' }}
-              </span>
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-semibold text-slate-900 truncate">{{ fullName }}</p>
-              <p class="text-xs text-slate-500">{{ 'auth.admin' | translate }}</p>
-            </div>
-          </div>
-          <button type="button" (click)="logout()"
-            class="p-2 rounded-xl text-rose-600 hover:bg-rose-50 transition"
-            [title]="'auth.logout' | translate">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <div class="ml-64 min-h-screen">
+  <div [style.marginLeft]="sidebarCollapsed ? '72px' : '260px'"
+    style="min-height:100vh;display:flex;flex-direction:column;
+      transition:margin-left 0.3s ease;">
 
     <!-- Header -->
-    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200 px-8 py-5">
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="flex items-center gap-2 mb-1 text-sm">
-            <span class="text-slate-500">Admin</span>
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-            <span class="font-medium text-slate-900">{{ 'admin.dashboard.breadcrumb' | translate }}</span>
-          </div>
-          <h1 class="text-2xl font-bold text-slate-900">{{ 'admin.dashboard.title' | translate }}</h1>
-        </div>
+<header style="background:#f0f4ff;padding:16px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:40;border-bottom:1px solid #e8eaff;">
+  <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#94a3b8;">
+    <span>Admin</span>
+    <span class="material-icons-round" style="font-size:16px;color:#94a3b8;">
+      chevron_right
+    </span>
+    <span style="color:#4f46e5;font-weight:700;">
+      {{ 'nav.overview' | translate }}
+    </span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button (click)="toggleLang()"
+      style="display:inline-flex;align-items:center;gap:6px;
+        padding:7px 14px;border:1.5px solid #e2e8f0;border-radius:8px;
+        font-size:13px;font-weight:600;cursor:pointer;background:white;color:#334155;">
+      <span class="material-icons-round" style="font-size:16px;">language</span>
+      {{ langService.current === 'fr' ? 'EN' : 'FR' }}
+    </button>
+  </div>
+</header>
 
-        <div class="flex items-center gap-3 pl-2">
-          <!-- Switch langue -->
-          <button (click)="toggleLang()"
-            class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200
-                   text-sm font-semibold hover:bg-slate-50 transition">
-            {{ langService.current === 'fr' ? '🇬🇧 EN' : '🇫🇷 FR' }}
-          </button>
-
-          <div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shadow-sm">
-            <span class="text-sm font-bold text-white">
-              {{ fullName ? fullName.charAt(0) : 'A' }}
-            </span>
-          </div>
-          <div class="hidden md:block">
-            <p class="text-sm font-semibold text-slate-900">{{ fullName }}</p>
-            <p class="text-xs text-slate-500">{{ 'auth.admin' | translate }}</p>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <main class="p-8 space-y-8 bg-slate-50 min-h-screen">
+    <!-- Content -->
+    <main style="padding:28px 32px;flex:1;">
 
       <!-- Titre -->
-      <section>
-        <h2 class="text-4xl font-bold text-slate-900">{{ 'admin.dashboard.overview' | translate }}</h2>
-        <p class="text-slate-500 mt-2 text-lg">{{ 'admin.dashboard.subtitle' | translate }}</p>
-      </section>
+      <div style="margin-bottom:24px;">
+        <h1 style="font-size:26px;font-weight:800;color:#0f172a;margin:0 0 4px;">
+          {{ 'admin.dashboard.overview' | translate }}
+        </h1>
+        <p style="font-size:13px;color:#64748b;margin:0;">
+          {{ 'admin.dashboard.subtitle' | translate }}
+        </p>
+      </div>
 
       <!-- KPI Cards -->
-      <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div *ngFor="let card of overviewCards"
-          class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition">
-          <div class="flex items-start justify-between mb-6">
-            <p class="text-sm uppercase tracking-[0.2em] text-slate-500 font-medium">
-              {{ card.label }}
-            </p>
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center" [ngClass]="card.iconBg">
-              <svg class="w-5 h-5" [ngClass]="card.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path *ngIf="card.icon === 'folder'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 7a2 2 0 012-2h3l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
-                <path *ngIf="card.icon === 'warning'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 9v2m0 4h.01M10.29 3.86l-7.5 13A1 1 0 003.66 18h16.68a1 1 0 00.87-1.5l-7.5-13a1 1 0 00-1.74 0z"/>
-                <path *ngIf="card.icon === 'check'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2A9 9 0 113 12a9 9 0 0118 0z"/>
-                <path *ngIf="card.icon === 'x'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"/>
-                <path *ngIf="card.icon === 'cpu'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 3v2m6-2v2m-9 4H4m16 0h-2m-9 10v2m6-2v2m4-9h2M4 15h2m1-8h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z"/>
-                <path *ngIf="card.icon === 'shield'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z"/>
-                <path *ngIf="card.icon === 'sparkles'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
-              </svg>
-            </div>
-          </div>
-          <div class="text-5xl font-bold" [ngClass]="card.valueColor">{{ card.value }}</div>
-        </div>
-      </section>
+      <!-- KPI Cards -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
 
+  <!-- Total Sinistres -->
+  <div style="background:white;border-radius:20px;padding:20px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.07);transition:all 0.2s;"
+    class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="width:44px;height:44px;border-radius:14px;background:#eff6ff;
+        display:flex;align-items:center;justify-content:center;">
+        <span class="material-icons-round" style="font-size:22px;color:#3b82f6;">
+          folder_open
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;
+        background:#f0fdf4;padding:4px 10px;border-radius:999px;">
+        <span class="material-icons-round" style="font-size:14px;color:#10b981;">
+          trending_up
+        </span>
+        <span style="font-size:11px;font-weight:700;color:#10b981;">+12%</span>
+      </div>
+    </div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;color:#94a3b8;margin:0 0 6px;">
+      {{ 'admin.dashboard.totalClaims' | translate }}
+    </p>
+    <p style="font-size:36px;font-weight:800;color:#3b82f6;margin:0 0 4px;line-height:1;">
+      {{ overviewCards[0]?.value }}
+    </p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 14px;">
+      Tous les sinistres déclarés
+    </p>
+    <!-- Sparkline -->
+    <svg viewBox="0 0 120 40" style="width:100%;height:40px;">
+      <polyline points="0,35 20,28 40,30 60,20 80,22 100,15 120,10"
+        fill="none" stroke="#3b82f6" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+      <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+      </linearGradient>
+      <polygon points="0,35 20,28 40,30 60,20 80,22 100,15 120,10 120,40 0,40"
+        fill="url(#g1)"/>
+    </svg>
+  </div>
+
+  <!-- En attente révision -->
+  <div style="background:white;border-radius:20px;padding:20px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.07);transition:all 0.2s;"
+    class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="width:44px;height:44px;border-radius:14px;background:#fffbeb;
+        display:flex;align-items:center;justify-content:center;">
+        <span class="material-icons-round" style="font-size:22px;color:#f59e0b;">
+          hourglass_empty
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;
+        background:#fef2f2;padding:4px 10px;border-radius:999px;">
+        <span class="material-icons-round" style="font-size:14px;color:#ef4444;">
+          trending_up
+        </span>
+        <span style="font-size:11px;font-weight:700;color:#ef4444;">+5%</span>
+      </div>
+    </div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;color:#94a3b8;margin:0 0 6px;">
+      {{ 'admin.dashboard.pendingReview' | translate }}
+    </p>
+    <p style="font-size:36px;font-weight:800;color:#f59e0b;margin:0 0 4px;line-height:1;">
+      {{ overviewCards[1]?.value }}
+    </p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 14px;">
+      Nécessitent votre attention
+    </p>
+    <svg viewBox="0 0 120 40" style="width:100%;height:40px;">
+      <polyline points="0,20 20,25 40,18 60,28 80,22 100,30 120,25"
+        fill="none" stroke="#f59e0b" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+      <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </linearGradient>
+      <polygon points="0,20 20,25 40,18 60,28 80,22 100,30 120,25 120,40 0,40"
+        fill="url(#g2)"/>
+    </svg>
+  </div>
+
+  <!-- Approuvés -->
+  <div style="background:white;border-radius:20px;padding:20px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.07);transition:all 0.2s;"
+    class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="width:44px;height:44px;border-radius:14px;background:#dcfce7;
+        display:flex;align-items:center;justify-content:center;">
+        <span class="material-icons-round" style="font-size:22px;color:#10b981;">
+          check_circle
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;
+        background:#f0fdf4;padding:4px 10px;border-radius:999px;">
+        <span class="material-icons-round" style="font-size:14px;color:#10b981;">
+          trending_up
+        </span>
+        <span style="font-size:11px;font-weight:700;color:#10b981;">+8%</span>
+      </div>
+    </div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;color:#94a3b8;margin:0 0 6px;">
+      {{ 'admin.dashboard.approved' | translate }}
+    </p>
+    <p style="font-size:36px;font-weight:800;color:#10b981;margin:0 0 4px;line-height:1;">
+      {{ overviewCards[2]?.value }}
+    </p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 14px;">
+      Sinistres approuvés
+    </p>
+    <svg viewBox="0 0 120 40" style="width:100%;height:40px;">
+      <polyline points="0,30 20,26 40,22 60,18 80,14 100,10 120,8"
+        fill="none" stroke="#10b981" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+      <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#10b981" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+      </linearGradient>
+      <polygon points="0,30 20,26 40,22 60,18 80,14 100,10 120,8 120,40 0,40"
+        fill="url(#g3)"/>
+    </svg>
+  </div>
+
+  <!-- Rejetés -->
+  <div style="background:white;border-radius:20px;padding:20px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.07);transition:all 0.2s;"
+    class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="width:44px;height:44px;border-radius:14px;background:#fee2e2;
+        display:flex;align-items:center;justify-content:center;">
+        <span class="material-icons-round" style="font-size:22px;color:#ef4444;">
+          cancel
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;
+        background:#fef2f2;padding:4px 10px;border-radius:999px;">
+        <span class="material-icons-round" style="font-size:14px;color:#ef4444;">
+          trending_down
+        </span>
+        <span style="font-size:11px;font-weight:700;color:#ef4444;">-3%</span>
+      </div>
+    </div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;color:#94a3b8;margin:0 0 6px;">
+      {{ 'admin.dashboard.rejected' | translate }}
+    </p>
+    <p style="font-size:36px;font-weight:800;color:#ef4444;margin:0 0 4px;line-height:1;">
+      {{ overviewCards[3]?.value }}
+    </p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 14px;">
+      Sinistres rejetés
+    </p>
+    <svg viewBox="0 0 120 40" style="width:100%;height:40px;">
+      <polyline points="0,10 20,14 40,12 60,18 80,22 100,26 120,30"
+        fill="none" stroke="#ef4444" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+      <linearGradient id="g4" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#ef4444" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+      </linearGradient>
+      <polygon points="0,10 20,14 40,12 60,18 80,22 100,26 120,30 120,40 0,40"
+        fill="url(#g4)"/>
+    </svg>
+  </div>
+
+</div>
+
+<!-- KPI secondaires -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+
+  <!-- Taux automatisation -->
+  <div style="background:white;border-radius:20px;padding:20px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.07);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="width:44px;height:44px;border-radius:14px;background:#ecfdf5;
+        display:flex;align-items:center;justify-content:center;">
+        <span class="material-icons-round" style="font-size:22px;color:#10b981;">
+          memory
+        </span>
+      </div>
+      <span style="font-size:11px;font-weight:700;color:#10b981;
+        background:#f0fdf4;padding:4px 10px;border-radius:999px;">
+        IA
+      </span>
+    </div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;color:#94a3b8;margin:0 0 6px;">
+      {{ 'admin.dashboard.automationRate' | translate }}
+    </p>
+    <p style="font-size:36px;font-weight:800;color:#10b981;margin:0 0 4px;line-height:1;">
+      {{ overviewCards[4]?.value }}
+    </p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 12px;">
+      Décisions prises par l'IA
+    </p>
+    <!-- Barre de progression -->
+    <div style="height:6px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+      <div style="height:100%;background:linear-gradient(90deg,#10b981,#059669);
+        border-radius:999px;transition:width 0.6s ease;"
+        [style.width]="overviewCards[4]?.value || '0%'">
+      </div>
+    </div>
+  </div>
+
+  <!-- Fraudes détectées -->
+  <div style="background:white;border-radius:20px;padding:20px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.07);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="width:44px;height:44px;border-radius:14px;background:#fee2e2;
+        display:flex;align-items:center;justify-content:center;">
+        <span class="material-icons-round" style="font-size:22px;color:#ef4444;">
+          gpp_bad
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;
+        background:#fef2f2;padding:4px 10px;border-radius:999px;">
+        <span class="material-icons-round" style="font-size:14px;color:#ef4444;">
+          warning
+        </span>
+        <span style="font-size:11px;font-weight:700;color:#ef4444;">Alerte</span>
+      </div>
+    </div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;color:#94a3b8;margin:0 0 6px;">
+      {{ 'admin.dashboard.fraudDetected' | translate }}
+    </p>
+    <p style="font-size:36px;font-weight:800;color:#ef4444;margin:0 0 4px;line-height:1;">
+      {{ overviewCards[5]?.value }}
+    </p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 12px;">
+      Cas suspects détectés
+    </p>
+    <div style="height:6px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+      <div style="height:100%;width:65%;
+        background:linear-gradient(90deg,#ef4444,#dc2626);
+        border-radius:999px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Score IA moyen -->
+  <div style="background:white;border-radius:20px;padding:20px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.07);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="width:44px;height:44px;border-radius:14px;background:#eff6ff;
+        display:flex;align-items:center;justify-content:center;">
+        <span class="material-icons-round" style="font-size:22px;color:#3b82f6;">
+          auto_awesome
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;
+        background:#eff6ff;padding:4px 10px;border-radius:999px;">
+        <span class="material-icons-round" style="font-size:14px;color:#3b82f6;">
+          trending_up
+        </span>
+        <span style="font-size:11px;font-weight:700;color:#3b82f6;">Bon</span>
+      </div>
+    </div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;color:#94a3b8;margin:0 0 6px;">
+      {{ 'admin.dashboard.avgAiScore' | translate }}
+    </p>
+    <p style="font-size:36px;font-weight:800;color:#3b82f6;margin:0 0 4px;line-height:1;">
+      {{ overviewCards[6]?.value }}
+    </p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 12px;">
+      Performance du modèle
+    </p>
+    <div style="height:6px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+      <div style="height:100%;width:75%;
+        background:linear-gradient(90deg,#3b82f6,#2563eb);
+        border-radius:999px;">
+      </div>
+    </div>
+  </div>
+
+</div>
       <!-- Activité récente -->
-      <section class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-        <div class="px-8 py-6 border-b border-slate-200 flex items-center justify-between">
-          <h3 class="text-2xl font-bold text-slate-900">{{ 'admin.dashboard.recentActivity' | translate }}</h3>
+      <div style="background:white;border-radius:20px;
+        box-shadow:0 2px 12px rgba(15,23,42,0.07);overflow:hidden;margin-bottom:24px;">
+
+        <div style="padding:18px 24px;border-bottom:1px solid #f1f5f9;
+          display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="material-icons-round" style="font-size:20px;color:#4f46e5;">
+              history
+            </span>
+            <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin:0;">
+              {{ 'admin.dashboard.recentActivity' | translate }}
+            </h3>
+          </div>
           <a routerLink="/admin/claims"
-            class="text-indigo-600 font-semibold hover:text-indigo-700 transition">
-            {{ 'admin.dashboard.viewAll' | translate }} →
+            style="display:inline-flex;align-items:center;gap:4px;
+              font-size:13px;color:#4f46e5;font-weight:700;text-decoration:none;">
+            {{ 'admin.dashboard.viewAll' | translate }}
+            <span class="material-icons-round" style="font-size:16px;">arrow_forward</span>
           </a>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead class="bg-slate-50">
-              <tr class="text-left">
-                <th class="px-8 py-4 font-semibold text-slate-500 uppercase">{{ 'admin.dashboard.table.reference' | translate }}</th>
-                <th class="px-8 py-4 font-semibold text-slate-500 uppercase">{{ 'admin.dashboard.table.type'      | translate }}</th>
-                <th class="px-8 py-4 font-semibold text-slate-500 uppercase">{{ 'admin.dashboard.table.status'    | translate }}</th>
-                <th class="px-8 py-4 font-semibold text-slate-500 uppercase">{{ 'admin.dashboard.table.aiScore'   | translate }}</th>
-                <th class="px-8 py-4 font-semibold text-slate-500 uppercase">{{ 'admin.dashboard.table.fraud'     | translate }}</th>
-                <th class="px-8 py-4 font-semibold text-slate-500 uppercase">{{ 'admin.dashboard.table.date'      | translate }}</th>
-                <th class="px-8 py-4 font-semibold text-slate-500 uppercase">{{ 'admin.dashboard.table.action'    | translate }}</th>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead style="background:#f8fafc;">
+              <tr>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;
+                  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;">
+                  {{ 'admin.dashboard.table.reference' | translate }}
+                </th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;
+                  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;">
+                  {{ 'admin.dashboard.table.type' | translate }}
+                </th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;
+                  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;">
+                  {{ 'admin.dashboard.table.status' | translate }}
+                </th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;
+                  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;">
+                  {{ 'admin.dashboard.table.aiScore' | translate }}
+                </th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;
+                  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;">
+                  {{ 'admin.dashboard.table.fraud' | translate }}
+                </th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;
+                  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;">
+                  {{ 'admin.dashboard.table.date' | translate }}
+                </th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;
+                  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;">
+                  {{ 'admin.dashboard.table.action' | translate }}
+                </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
-              <tr *ngFor="let item of recentActivity" class="hover:bg-slate-50 transition">
-                <td class="px-8 py-5 font-bold text-slate-900">{{ item.reference }}</td>
-                <td class="px-8 py-5 text-slate-600">{{ item.type }}</td>
-                <td class="px-8 py-5">
-                  <span class="px-4 py-2 rounded-full text-xs font-semibold"
+            <tbody>
+              <tr *ngFor="let item of recentActivity"
+                style="border-bottom:1px solid #f1f5f9;transition:background 0.15s;"
+                class="activity-row">
+
+                <!-- Référence -->
+                <td style="padding:14px 20px;">
+                  <span style="font-family:monospace;font-weight:700;font-size:12px;
+                    color:#0f172a;background:#f1f5f9;padding:4px 8px;border-radius:6px;">
+                    {{ item.reference }}
+                  </span>
+                </td>
+
+                <!-- Type -->
+                <td style="padding:14px 20px;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span class="material-icons-round" style="font-size:16px;color:#6366f1;">
+                      {{ item.type === 'AUTO'     ? 'directions_car' :
+                         item.type === 'HOME'     ? 'home' :
+                         item.type === 'HEALTH'   ? 'favorite' :
+                         item.type === 'SCOLAIRE' ? 'school' : 'inventory_2' }}
+                    </span>
+                    <span style="font-size:13px;color:#64748b;">{{ item.type }}</span>
+                  </div>
+                </td>
+
+                <!-- Statut -->
+                <td style="padding:14px 20px;">
+                  <span style="display:inline-flex;align-items:center;gap:4px;
+                    padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;"
                     [ngClass]="getStatusBadge(item.status)">
+                    <span class="material-icons-round" style="font-size:12px;">
+                      {{ item.status === 'APPROVED'       ? 'check_circle' :
+                         item.status === 'REJECTED'       ? 'cancel' :
+                         item.status === 'HUMAN_REQUIRED' ? 'hourglass_empty' :
+                         item.status === 'COMPLETED'      ? 'task_alt' : 'pending' }}
+                    </span>
                     {{ item.status }}
                   </span>
                 </td>
-                <td class="px-8 py-5 font-semibold" [ngClass]="getScoreText(item.score)">
+
+                <!-- Score IA -->
+                <td style="padding:14px 20px;font-size:13px;font-weight:700;"
+                  [ngClass]="getScoreText(item.score)">
                   {{ item.score }}
                 </td>
-                <td class="px-8 py-5"
-                  [ngClass]="item.fraud === '✓' ? 'text-emerald-600 font-bold' : 'text-rose-500 font-medium'">
-                  {{ item.fraud }}
+
+                <!-- Fraude -->
+                <td style="padding:14px 20px;">
+                  <span class="material-icons-round" style="font-size:20px;"
+                    [style.color]="item.fraud === '✓' ? '#10b981' : '#ef4444'">
+                    {{ item.fraud === '✓' ? 'check_circle' : 'cancel' }}
+                  </span>
                 </td>
-                <td class="px-8 py-5 text-slate-500">{{ item.date }}</td>
-                <td class="px-8 py-5">
-                  <div class="flex items-center gap-3">
+
+                <!-- Date -->
+                <td style="padding:14px 20px;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span class="material-icons-round" style="font-size:14px;color:#94a3b8;">
+                      calendar_today
+                    </span>
+                    <span style="font-size:13px;color:#64748b;">{{ item.date }}</span>
+                  </div>
+                </td>
+
+                <!-- Action -->
+                <td style="padding:14px 20px;">
+                  <div style="display:flex;gap:8px;">
                     <a [routerLink]="['/admin/claims']" [queryParams]="{ ref: item.reference }"
-                      class="inline-flex items-center justify-center w-10 h-10 rounded-xl border
-                             border-slate-200 bg-white text-slate-600 hover:bg-slate-100
-                             hover:text-indigo-700 transition"
-                      [title]="'admin.dashboard.table.viewClaims' | translate">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                      </svg>
+                      style="width:34px;height:34px;border-radius:10px;border:1.5px solid #e2e8f0;
+                        background:white;display:flex;align-items:center;justify-content:center;
+                        text-decoration:none;color:#64748b;transition:all 0.2s;">
+                      <span class="material-icons-round" style="font-size:18px;">
+                        visibility
+                      </span>
                     </a>
                     <a *ngIf="item.action === 'Examiner'"
                       [routerLink]="['/admin/review']" [queryParams]="{ ref: item.reference }"
-                      class="px-4 py-2 rounded-full border border-amber-300 bg-amber-50
-                             text-amber-700 font-semibold hover:bg-amber-100 transition">
+                      style="display:inline-flex;align-items:center;gap:6px;
+                        padding:6px 14px;border-radius:10px;border:1.5px solid #fbbf24;
+                        background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;
+                        text-decoration:none;">
+                      <span class="material-icons-round" style="font-size:14px;">
+                        rate_review
+                      </span>
                       {{ 'admin.dashboard.table.examine' | translate }}
                     </a>
                   </div>
                 </td>
+
               </tr>
             </tbody>
           </table>
         </div>
-      </section>
+      </div>
 
       <!-- Détection fraude -->
-      <section>
-        <h3 class="text-2xl font-bold text-slate-900 mb-6">{{ 'admin.dashboard.fraudDetection' | translate }}</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <span class="material-icons-round" style="font-size:22px;color:#4f46e5;">
+            security
+          </span>
+          <h3 style="font-size:18px;font-weight:800;color:#0f172a;margin:0;">
+            {{ 'admin.dashboard.fraudDetection' | translate }}
+          </h3>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
           <div *ngFor="let fraud of fraudCards"
-            class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition">
-            <p class="text-sm uppercase tracking-[0.18em] text-slate-500 font-medium mb-5">
+            style="background:white;border-radius:20px;padding:20px;
+              box-shadow:0 2px 12px rgba(15,23,42,0.07);">
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;
+              letter-spacing:0.5px;color:#94a3b8;margin:0 0 12px;">
               {{ fraud.label }}
             </p>
-            <div class="text-5xl font-bold" [ngClass]="fraud.valueColor">{{ fraud.value }}</div>
+            <div style="font-size:32px;font-weight:800;" [ngClass]="fraud.valueColor">
+              {{ fraud.value }}
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
     </main>
   </div>

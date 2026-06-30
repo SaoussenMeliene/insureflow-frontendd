@@ -1,80 +1,81 @@
-:host {
-  display: block;
-  animation: fadeIn 0.4s ease;
+/* ── NAV ── */
+.nav-link:hover {
+  background: rgba(255,255,255,0.07) !important;
+  color: rgba(255,255,255,0.9) !important;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.active-nav {
+  background: #4f46e5 !important;
+  color: white !important;
+}
+.logout-btn:hover {
+  background: rgba(239,68,68,0.1) !important;
+  color: #fca5a5 !important;
 }
 
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20%,
-  60% {
-    transform: translateX(-6px);
-  }
-  40%,
-  80% {
-    transform: translateX(6px);
-  }
+/* ── ACTION CARDS ── */
+.action-card-web:hover {
+  background: #ede9fe !important;
+  transform: translateY(-2px);
 }
 
-.animate-shake {
-  animation: shake 0.4s ease;
+/* ── PORTFOLIO CARDS ── */
+.portfolio-card-web:hover {
+  background: #ede9fe !important;
+  transform: translateY(-2px);
 }
 
-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 30px #f9fafb inset !important;
-  -webkit-text-fill-color: #111827 !important;
+/* ── SINISTRE ROWS ── */
+.sinistre-row:hover {
+  background: #f8fafc;
 }
 
-html,
-body {
-  height: 100%;
-  overflow: hidden;
+/* ── STATUS BADGES ── */
+.badge-submitted,
+.bg-blue-100.text-blue-700 {
+  background: #eff6ff !important;
+  color: #3b82f6 !important;
 }
 
-/* Styles spécifiques pour le Dashboard */
-.dashboard-container {
-  background-color: #f9fafb; /* Couleur d'arrière-plan */
-  padding: 1rem;
-  overflow-y: auto; /* Permet de faire défiler le contenu */
+.badge-completed,
+.bg-green-100.text-green-700 {
+  background: #dcfce7 !important;
+  color: #15803d !important;
 }
 
-.sidebar {
-  background-color: #6b5b7f; /* Couleur de la barre latérale */
-  width: 250px; /* Largeur de la barre latérale */
+.badge-review,
+.bg-orange-100.text-orange-700 {
+  background: #fff7ed !important;
+  color: #c2410c !important;
 }
 
-.main-content {
-  padding: 2rem;
-  background-color: white; /* Couleur du contenu principal */
+.badge-approved,
+.bg-emerald-100.text-emerald-700 {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
 }
 
-/* Autres styles selon besoin */
-.card {
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+.badge-rejected,
+.bg-red-100.text-red-700 {
+  background: #fef2f2 !important;
+  color: #ef4444 !important;
 }
 
-.nav-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
 }
 
-/* Classes supplémentaires pour imitater votre design */
-.text-purple {
-  color: #6b5b7f; /* Couleur du texte */
+.action-card-web {
+  animation: fadeUp 0.3s ease both;
 }
+
+.action-card-web:nth-child(1) { animation-delay: 0.05s; }
+.action-card-web:nth-child(2) { animation-delay: 0.10s; }
+.action-card-web:nth-child(3) { animation-delay: 0.15s; }
+.action-card-web:nth-child(4) { animation-delay: 0.20s; }

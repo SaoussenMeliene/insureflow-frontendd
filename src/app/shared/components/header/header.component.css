@@ -1,0 +1,11 @@
+/* ── LANG BTN ── */
+button:hover {
+  border-color: #6366f1 !important;
+  color: #4f46e5 !important;
+}
+ 
+/* ── AVATAR LINK ── */
+a:hover {
+  border-color: #6366f1 !important;
+}
+ 

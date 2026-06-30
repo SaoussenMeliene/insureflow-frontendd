@@ -6,12 +6,15 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { FirebaseNotificationService } from '../../../core/services/firebase.service';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';                              // ← AJOUTER
-import { LanguageService } from '../../../core/services/language.service';  
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../core/services/language.service';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar.component';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule,TranslateModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, SidebarComponent, HeaderComponent],
   templateUrl: './profile.html',
   styleUrls: ['./profile.css'],
 })
@@ -39,22 +42,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
     new:     ''
   };
 
-  // ✅ Notifications
   notifCount     = 0;
   notifications: any[] = [];
   showNotifPanel = false;
   private notifSub?: Subscription;
+
+  private api = environment.apiUrl; // ← AJOUTÉ
 
   constructor(
     private authService:     AuthService,
     private http:            HttpClient,
     private cdr:             ChangeDetectorRef,
     private firebaseService: FirebaseNotificationService,
-    public langService: LanguageService,
+    public  langService:     LanguageService,
   ) {}
 
   ngOnInit(): void {
-    // ✅ Subscribe au BehaviorSubject partagé
     this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
       this.notifications = notifs;
       this.notifCount    = this.firebaseService.getUnreadCount();
@@ -67,24 +70,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.notifSub?.unsubscribe();
   }
 
-  // ✅ Toggle panel
- toggleNotifPanel() {
-  this.showNotifPanel = !this.showNotifPanel;
-  if (this.showNotifPanel) {
-    this.notifCount = 0;
-    this.firebaseService.markAsSeen(); // ← AJOUTER
+  toggleNotifPanel() {
+    this.showNotifPanel = !this.showNotifPanel;
+    if (this.showNotifPanel) {
+      this.notifCount = 0;
+      this.firebaseService.markAsSeen();
+    }
   }
-}
 
-  // ✅ Effacer notifications
   clearNotifications() {
     this.firebaseService.clearNotifications();
     this.showNotifPanel = false;
   }
 
   toggleLang() {
-  this.langService.toggle();
-}
+    this.langService.toggle();
+  }
 
   showToastMessage(message: string, type: string): void {
     this.toastMessage = message;
@@ -116,11 +117,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.role     = this.profile.role;
 
     this.http.get<any>(
-      `http://localhost:8080/api/auth/profile/email/${user.email}`
+      `${this.api}/api/auth/profile/email/${user.email}` // ← CORRIGÉ
     ).subscribe({
       next: (res) => {
         const proxyUrl = res.profileImage
-          ? `http://localhost:8080/api/auth/profile-image/${res.id}?t=${Date.now()}`
+          ? `${this.api}/api/auth/profile-image/${res.id}?t=${Date.now()}` // ← CORRIGÉ
           : '';
 
         this.profile = {
@@ -154,7 +155,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (!this.profile?.id) return;
 
     this.http.put<any>(
-      `http://localhost:8080/api/auth/profile/${this.profile.id}`,
+      `${this.api}/api/auth/profile/${this.profile.id}`, // ← CORRIGÉ
       { fullName: this.profile.fullName, email: this.profile.email }
     ).subscribe({
       next: () => {
@@ -174,7 +175,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     this.http.put(
-      `http://localhost:8080/api/auth/change-password/${this.profile.id}`,
+      `${this.api}/api/auth/change-password/${this.profile.id}`, // ← CORRIGÉ
       { currentPassword: this.password.current, newPassword: this.password.new },
       { responseType: 'text' }
     ).subscribe({
@@ -194,14 +195,17 @@ export class ProfileComponent implements OnInit, OnDestroy {
     formData.append('file', file);
 
     this.http.post(
-      `http://localhost:8080/api/auth/upload-photo/${this.profile.id}`,
+      `${this.api}/api/auth/upload-photo/${this.profile.id}`, // ← CORRIGÉ
       formData,
       { responseType: 'text' }
     ).subscribe({
       next: () => {
         const proxyUrl =
-          `http://localhost:8080/api/auth/profile-image/${this.profile.id}?t=${Date.now()}`;
+          `${this.api}/api/auth/profile-image/${this.profile.id}?t=${Date.now()}`; // ← CORRIGÉ
+
         this.profile = { ...this.profile, profileImage: proxyUrl };
+        this.authService.updateProfileImage(proxyUrl);
+
         this.cdr.detectChanges();
         this.showToastMessage('✅ Photo mise à jour !', 'success');
       },

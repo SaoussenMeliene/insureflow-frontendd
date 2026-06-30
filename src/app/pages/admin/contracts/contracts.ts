@@ -5,14 +5,15 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/services/language.service';
+import { AdminSidebarComponent } from '../../../shared/components/admin-sidebar/admin-sidebar.component';
 
 
 @Component({
   selector: 'app-contracts-admin',
   standalone: true,
-  imports: [CommonModule, RouterModule,TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule,AdminSidebarComponent],
   templateUrl: './contracts.html'
 })
 export class ContractsComponent implements OnInit {
@@ -22,10 +23,11 @@ export class ContractsComponent implements OnInit {
   reindexSuccess = false;
   reindexError   = false;
   chunksIndexed  = 0;
-
-  // ← Pour annuler la requête
+  sidebarCollapsed = false;
+  pendingCount     = 0; 
   private cancelReindex$ = new Subject<void>();
 
+  // ── AUTO ──────────────────────────────────────
   autoGuarantees = [
     { label: 'Responsabilité Civile', value: 'Illimitée' },
     { label: 'Vol',                   value: '56 516 DT' },
@@ -36,6 +38,7 @@ export class ContractsComponent implements OnInit {
     { label: 'Voiture remplacement',  value: '15 jours' }
   ];
 
+  // ── SCOLAIRE ──────────────────────────────────
   schoolGuarantees = [
     { label: 'Incendie Bâtiment',     value: '500 000 DT' },
     { label: 'Incendie Mobilier',     value: '50 000 DT' },
@@ -45,68 +48,50 @@ export class ContractsComponent implements OnInit {
     { label: 'Frais Médicaux',        value: '300 DT' }
   ];
 
+  // ── HOME ──────────────────────────────────────
+  homeGuarantees = [
+    { label: 'Incendie et explosion', value: '200 000 DT' },
+    { label: 'Vol et cambriolage',    value: '50 000 DT' },
+    { label: 'Dégâts des eaux',       value: '30 000 DT' },
+    { label: 'RC habitation',         value: '100 000 DT' }
+  ];
+
+  // ── HEALTH ────────────────────────────────────
+  healthGuarantees = [
+    { label: 'Décès accidentel',      value: '50 000 DT' },
+    { label: 'Invalidité permanente', value: '50 000 DT' },
+    { label: 'Frais médicaux',        value: '10 000 DT' },
+    { label: 'Hospitalisation',       value: '5 000 DT' }
+  ];
+
+  // ── OTHER ─────────────────────────────────────
+  otherGuarantees = [
+    { label: 'RC exploitation',       value: '100 000 DT' },
+    { label: 'Vol et cambriolage',    value: '50 000 DT' },
+    { label: 'Bris de machine',       value: '30 000 DT' },
+    { label: "Pertes d'exploitation", value: '20 000 DT' }
+  ];
+
   constructor(
     private authService: AuthService,
     private http:        HttpClient,
     private cdr:         ChangeDetectorRef,
-    private translate:        TranslateService, // ← AJOUTER
-    public  langService:      LanguageService,
+    private translate:   TranslateService,
+    public  langService: LanguageService,
   ) {}
 
   ngOnInit() {
     const user = this.authService.getUser();
     if (user) this.fullName = user.fullName || '';
   }
+
   toggleLang() {
     this.langService.toggle();
-    this.cdr.detectChanges(); // ← force le recalcul des getters
-  }
-
-  // ── Lance la réindexation ────────────────────
-  reindexContracts() {
-    this.reindexLoading = true;
-    this.reindexSuccess = false;
-    this.reindexError   = false;
-    this.cancelReindex$ = new Subject<void>();
     this.cdr.detectChanges();
-
-    this.http.post<any>(
-      'http://localhost:8080/api/contract-rag/index', {}
-    ).pipe(
-      takeUntil(this.cancelReindex$) // ← annule si stop
-    ).subscribe({
-      next: (data: any) => {
-        this.reindexLoading = false;
-        this.reindexSuccess = true;
-        this.chunksIndexed  = data.chunksIndexed || 0;
-        this.cdr.detectChanges();
-
-        setTimeout(() => {
-          this.reindexSuccess = false;
-          this.cdr.detectChanges();
-        }, 5000);
-      },
-      error: (err) => {
-        this.reindexLoading = false;
-        this.reindexError   = true;
-        this.cdr.detectChanges();
-
-        setTimeout(() => {
-          this.reindexError = false;
-          this.cdr.detectChanges();
-        }, 5000);
-      }
-    });
   }
 
-  // ── Arrête la réindexation ───────────────────
-  stopReindex() {
-    this.cancelReindex$.next();
-    this.cancelReindex$.complete();
-    this.reindexLoading = false;
-    this.cdr.detectChanges();
-    console.log('Réindexation annulée');
-  }
+ 
+
 
   logout() {
     this.authService.logout();

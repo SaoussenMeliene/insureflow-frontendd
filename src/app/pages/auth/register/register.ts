@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment'; // ← AJOUTÉ
 
 @Component({
   selector: 'app-register',
@@ -15,31 +16,33 @@ export class RegisterComponent {
 
   form = {
     fullName: '',
-    email: '',
-    cin: '',
+    email:    '',
+    cin:      '',
     password: ''
   };
 
   showPassword = false;
-  isLoading = false;
+  isLoading    = false;
   error: string | null = null;
+
+  private api = environment.apiUrl; // ← AJOUTÉ
 
   constructor(
     private router: Router,
-    private http: HttpClient
+    private http:   HttpClient
   ) {}
 
   get passwordStrength() {
     const pw = this.form.password;
     if (!pw) return { label: '', color: '', width: '0%' };
     let score = 0;
-    if (pw.length >= 8) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
+    if (pw.length >= 8)          score++;
+    if (/[A-Z]/.test(pw))        score++;
+    if (/[0-9]/.test(pw))        score++;
     if (/[^A-Za-z0-9]/.test(pw)) score++;
-    if (score <= 1) return { label: 'Faible', color: 'bg-red-500', width: '33%' };
-    if (score <= 2) return { label: 'Moyen', color: 'bg-orange-400', width: '66%' };
-    return { label: 'Fort', color: 'bg-green-500', width: '100%' };
+    if (score <= 1) return { label: 'Faible', color: 'bg-red-500',    width: '33%'  };
+    if (score <= 2) return { label: 'Moyen',  color: 'bg-orange-400', width: '66%'  };
+    return              { label: 'Fort',   color: 'bg-green-500',  width: '100%' };
   }
 
   togglePassword(): void {
@@ -61,24 +64,17 @@ export class RegisterComponent {
 
     this.isLoading = true;
 
-    // ═══════════════════════════════════════
-    // POST http://localhost:8080/api/auth/register
-    // Body: { fullName, email, cin, password }
-    // ═══════════════════════════════════════
-    this.http.post<any>('http://localhost:8080/api/auth/register', this.form)
+    this.http.post<any>(`${this.api}/api/auth/register`, this.form) // ← CORRIGÉ
       .subscribe({
         next: (response) => {
           this.isLoading = false;
           console.log('Inscription réussie:', response);
-
-          // Redirection vers login avec message succès
           this.router.navigate(['/login'], {
             queryParams: { registered: 'true' }
           });
         },
         error: (err) => {
           this.isLoading = false;
-          // Le backend renvoie { message: "Email déjà utilisé" } en cas d'erreur
           this.error = err.error?.message || "Erreur lors de l'inscription.";
           console.error('Erreur inscription:', err);
         }

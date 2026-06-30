@@ -1,4 +1,9 @@
 {
+  "auth": {
+    "client": "Client",
+    "admin": "Administrateur",
+    "logout": "Déconnexion"
+  },
   "nav": {
     "overview":  "Vue d'ensemble",
     "claims":    "Tous les sinistres",
@@ -28,13 +33,13 @@
       "HUMAN_REQUIRED": "Révision humaine requise"
     },
     "fraud": {
-      "none":    "Aucune fraude",
-      "detected":"FRAUDE DÉTECTÉE",
-      "score":   "Score fraude"
+      "none":     "Aucune fraude",
+      "detected": "FRAUDE DÉTECTÉE",
+      "score":    "Score fraude"
     },
     "human": {
       "title": "Intervention humaine requise",
-      "goto":  "Aller vers la révision →"
+      "goto":  "Aller vers la révision"
     }
   },
   "status": {
@@ -45,18 +50,14 @@
     "REJECTED":       "Rejeté"
   },
   "fraudTypes": {
-    "PRICE_INFLATION":        "💰 Inflation de prix",
-    "FAKE_PHOTO":             "📸 Fausse photo",
-    "PHOTO_MISMATCH":         "🖼️ Photo incohérente",
-    "PARTS_MISMATCH":         "🔧 Pièces incorrectes",
-    "PRICE_UNDERESTIMATION":  "📉 Sous-estimation prix",
-    "INTERNAL_INCONSISTENCY": "⚠️ Incohérence interne",
-    "DESCRIPTION_MISMATCH":   "📝 Description incorrecte",
-    "NO_FRAUD":               "✓ Aucune fraude"
-  },
-  "auth": {
-    "logout": "Déconnexion",
-    "admin":  "Administrateur"
+    "PRICE_INFLATION":        "Inflation de prix",
+    "FAKE_PHOTO":             "Fausse photo",
+    "PHOTO_MISMATCH":         "Photo incohérente",
+    "PARTS_MISMATCH":         "Pièces incorrectes",
+    "PRICE_UNDERESTIMATION":  "Sous-estimation prix",
+    "INTERNAL_INCONSISTENCY": "Incohérence interne",
+    "DESCRIPTION_MISMATCH":   "Description incorrecte",
+    "NO_FRAUD":               "Aucune fraude"
   },
   "admin": {
     "dashboard": {
@@ -67,6 +68,13 @@
       "recentActivity": "Activité récente",
       "viewAll":        "Tout voir",
       "fraudDetection": "Détection de fraude",
+      "totalClaims":    "Total sinistres",
+      "pendingReview":  "En attente révision",
+      "approved":       "Approuvés",
+      "rejected":       "Rejetés",
+      "automationRate": "Taux automatisation",
+      "fraudDetected":  "Fraudes détectées",
+      "avgAiScore":     "Score IA moyen",
       "table": {
         "reference":  "Référence",
         "type":       "Type",
@@ -119,162 +127,140 @@
       "actions": {
         "analyze":  "Analyser",
         "pipeline": "Pipeline"
-      },"claimTypes": {
-  "AUTO":     "Automobile",
-  "HOME":     "Habitation",
-  "SCOLAIRE": "Scolaire",
-  "HEALTH": "Santé",
-"OTHER":  "Autre"
-}
+      },
+      "claimTypes": {
+        "AUTO":     "Automobile",
+        "HOME":     "Habitation",
+        "SCOLAIRE": "Scolaire",
+        "HEALTH":   "Santé",
+        "OTHER":    "Autre"
+      }
     },
     "review": {
-  "title":   "Tableau de bord administrateur",
-  "heading": "Révision humaine",
-  "subtitle":"Dossiers nécessitant l'intervention d'un administrateur",
-  "empty":   "Aucun dossier en attente",
-  "tabs": {
-    "pending": "En attente",
-    "all":     "Tous les dossiers"
-  },
-  "stats": {
-    "pending":       "Total en attente",
-    "suspectedFraud":"Fraudes suspectées",
-    "avgScore":      "Score moyen"
-  },
-  "card": {
-    "suspectedFraud":"Fraude suspectée",
-    "reviewRequired":"Révision requise",
-    "aiScore":       "Score IA",
-    "examine":       "Examiner le dossier"
-  },
-  "modal": {
-    "claimInfo":           "Informations sinistre",
-    "policy":              "Police",
-    "location":            "Lieu",
-    "brand":               "Marque",
-    "model":               "Modèle",
-    "year":                "Année",
-    "description":         "Description",
-    "photos":              "Photos du sinistre",
-    "noPhotos":            "Aucune photo disponible",
-    "aiResult":            "Résultat IA",
-    "reviewReason":        "Raison de révision",
-    "contractRag":         "Contrat RAG",
-    "estimation":          "Estimation",
-    "fraudDetected":       "Fraude détectée",
-    "fraudScore":          "Score fraude",
-    "decision":            "Décision admin",
-    "comment":             "Commentaire (optionnel)",
-    "commentPlaceholder":  "Notes du réviseur...",
-    "rejectionMotif":      "Motif de rejet",
-    "requiredIfRejected":  "obligatoire si rejet",
-    "rejectionPlaceholder":"Ex: Fraude avérée, documents insuffisants...",
-    "approve":             "✔ APPROUVER",
-    "reject":              "✖ REJETER"
-  }
-},"users": {
-  "title":       "Gestion utilisateurs",
-  "heading":     "Gestion utilisateurs",
-  "subtitle":    "Comptes clients et administrateurs",
-  "loading":     "Chargement des utilisateurs...",
-  "empty":       "Aucun utilisateur trouvé",
-  "search":      "Rechercher par nom ou email...",
-  "allStatuses": "Tous statuts",
-  "statusActive":"Actif",
-  "statusInactive":"Inactif",
-  "stats": {
-    "total":         "Total",
-    "activeClients": "Clients actifs",
-    "admins":        "Admins",
-    "inactive":      "Inactifs"
-  },
-  "cols": {
-    "id":       "ID",
-    "name":     "Nom",
-    "email":    "Email",
-    "role":     "Rôle",
-    "status":   "Statut",
-    "joinDate": "Date inscription",
-    "actions":  "Actions"
-  },
-  "actions": {
-    "view":       "Voir",
-    "deactivate": "Désactiver",
-    "activate":   "Activer"
-  },
-  "modal": { "title": "Profil utilisateur" },
-  "confirm": {
-    "title":             "Confirmation",
-    "message":           "Voulez-vous vraiment",
-    "theUser":           "l'utilisateur",
-    "cancel":            "Annuler",
-    "confirmDeactivate": "Confirmer la désactivation",
-    "confirmActivate":   "Confirmer l'activation"
-  }
-},
-"users": {
-  "title":       "Gestion utilisateurs",
-  "heading":     "Gestion utilisateurs",
-  "subtitle":    "Comptes clients et administrateurs",
-  "loading":     "Chargement des utilisateurs...",
-  "empty":       "Aucun utilisateur trouvé",
-  "search":      "Rechercher par nom ou email...",
-  "allStatuses": "Tous statuts",
-  "statusActive":"Actif",
-  "statusInactive":"Inactif",
-  "stats": {
-    "total":         "Total",
-    "activeClients": "Clients actifs",
-    "admins":        "Admins",
-    "inactive":      "Inactifs"
-  },
-  "cols": {
-    "id":       "ID",
-    "name":     "Nom",
-    "email":    "Email",
-    "role":     "Rôle",
-    "status":   "Statut",
-    "joinDate": "Date inscription",
-    "actions":  "Actions"
-  },
-  "actions": {
-    "view":       "Voir",
-    "deactivate": "Désactiver",
-    "activate":   "Activer"
-  },
-  "modal": { "title": "Profil utilisateur" },
-  "confirm": {
-    "title":             "Confirmation",
-    "message":           "Voulez-vous vraiment",
-    "theUser":           "l'utilisateur",
-    "cancel":            "Annuler",
-    "confirmDeactivate": "Confirmer la désactivation",
-    "confirmActivate":   "Confirmer l'activation"
-  }
-},
-"contracts": {
-  "title":          "Contrats BNA",
-  "heading":        "Contrats BNA",
-  "subtitle":       "Polices d'assurance utilisées par le moteur RAG",
-  "reindexBtn":     "Réindexer les contrats IA",
-  "stopBtn":        "Arrêter la réindexation",
-  "reindexSuccess": "chunks réindexés avec succès !",
-  "reindexError":   "Erreur lors de la réindexation",
-  "guarantees":     "Garanties",
-  "annualPremium":  "Prime annuelle",
-  "auto": {
-    "badge":       "Contrat AUTO",
-    "name":        "Affaires et Promenades",
-    "vehicle":     "Véhicule",
-    "marketValue": "Valeur vénale"
-  },
-  "school": {
-    "badge":    "Contrat SCOLAIRE",
-    "name":     "Madrassati",
-    "school":   "École",
-    "students": "élèves"
-  }
-}
+      "title":   "Tableau de bord administrateur",
+      "heading": "Révision humaine",
+      "subtitle":"Dossiers nécessitant l'intervention d'un administrateur",
+      "empty":   "Aucun dossier en attente",
+      "tabs": {
+        "pending": "En attente",
+        "all":     "Tous les dossiers"
+      },
+      "stats": {
+        "pending":        "Total en attente",
+        "suspectedFraud": "Fraudes suspectées",
+        "avgScore":       "Score moyen"
+      },
+      "card": {
+        "suspectedFraud": "Fraude suspectée",
+        "reviewRequired": "Révision requise",
+        "aiScore":        "Score IA",
+        "examine":        "Examiner le dossier"
+      },
+      "modal": {
+        "claimInfo":           "Informations sinistre",
+        "policy":              "Police",
+        "location":            "Lieu",
+        "brand":               "Marque",
+        "model":               "Modèle",
+        "year":                "Année",
+        "description":         "Description",
+        "photos":              "Photos du sinistre",
+        "noPhotos":            "Aucune photo disponible",
+        "aiResult":            "Résultat IA",
+        "reviewReason":        "Raison de révision",
+        "contractRag":         "Contrat RAG",
+        "estimation":          "Estimation",
+        "fraudDetected":       "Fraude détectée",
+        "fraudScore":          "Score fraude",
+        "decision":            "Décision admin",
+        "comment":             "Commentaire (optionnel)",
+        "commentPlaceholder":  "Notes du réviseur...",
+        "rejectionMotif":      "Motif de rejet",
+        "requiredIfRejected":  "obligatoire si rejet",
+        "rejectionPlaceholder":"Ex: Fraude avérée, documents insuffisants...",
+        "approve":             "APPROUVER",
+        "reject":              "REJETER"
+      }
+    },
+    "users": {
+      "title":          "Gestion utilisateurs",
+      "heading":        "Gestion utilisateurs",
+      "subtitle":       "Comptes clients et administrateurs",
+      "loading":        "Chargement des utilisateurs...",
+      "empty":          "Aucun utilisateur trouvé",
+      "search":         "Rechercher par nom ou email...",
+      "allStatuses":    "Tous statuts",
+      "statusActive":   "Actif",
+      "statusInactive": "Inactif",
+      "stats": {
+        "total":         "Total",
+        "activeClients": "Clients actifs",
+        "admins":        "Admins",
+        "inactive":      "Inactifs"
+      },
+      "cols": {
+        "id":       "ID",
+        "name":     "Nom",
+        "email":    "Email",
+        "role":     "Rôle",
+        "status":   "Statut",
+        "joinDate": "Date inscription",
+        "actions":  "Actions"
+      },
+      "actions": {
+        "view":       "Voir",
+        "deactivate": "Désactiver",
+        "activate":   "Activer"
+      },
+      "modal": {
+        "title": "Profil utilisateur"
+      },
+      "confirm": {
+        "title":             "Confirmation",
+        "message":           "Voulez-vous vraiment",
+        "theUser":           "l'utilisateur",
+        "cancel":            "Annuler",
+        "confirmDeactivate": "Confirmer la désactivation",
+        "confirmActivate":   "Confirmer l'activation"
+      }
+    },
+    "contracts": {
+      "title":          "Contrats BNA",
+      "heading":        "Contrats BNA",
+      "subtitle":       "Polices d'assurance utilisées par le moteur RAG",
+      "reindexBtn":     "Réindexer les contrats IA",
+      "stopBtn":        "Arrêter la réindexation",
+      "reindexSuccess": "chunks réindexés avec succès !",
+      "reindexError":   "Erreur lors de la réindexation",
+      "guarantees":     "Garanties",
+      "annualPremium":  "Prime annuelle",
+      "franchise":      "Franchise",
+      "ceiling":        "Plafond",
+      "auto": {
+        "badge":       "Contrat AUTO",
+        "name":        "Affaires et Promenades",
+        "vehicle":     "Véhicule",
+        "marketValue": "Valeur marché"
+      },
+      "school": {
+        "badge":    "Contrat SCOLAIRE",
+        "name":     "Madrassati",
+        "school":   "École",
+        "students": "élèves"
+      },
+      "home": {
+        "badge": "Contrat HABITATION",
+        "name":  "Multirisques Habitation"
+      },
+      "health": {
+        "badge": "Contrat SANTÉ",
+        "name":  "Individuelle Accidents"
+      },
+      "other": {
+        "badge": "Contrat AUTRES",
+        "name":  "Multirisques Divers"
+      }
+    }
   },
   "client": {
     "nav": {
@@ -307,11 +293,11 @@
       "OTHER":    "Autres"
     },
     "quickActions": {
-      "title":    "Actions rapides",
-      "declare":  "Déclarer un sinistre",
-      "claims":   "Mes sinistres",
-      "contracts":"Mes contrats",
-      "profile":  "Mon profil"
+      "title":     "Actions rapides",
+      "declare":   "Déclarer un sinistre",
+      "claims":    "Mes sinistres",
+      "contracts": "Mes contrats",
+      "profile":   "Mon profil"
     },
     "notifications": {
       "title":    "Notifications",
@@ -349,7 +335,7 @@
     "myClaims": {
       "title":     "Mes sinistres",
       "subtitle":  "Gérez et suivez vos déclarations de sinistre",
-      "new":       "+ Nouveau sinistre",
+      "new":       "Nouveau sinistre",
       "loading":   "Chargement des sinistres...",
       "empty":     "Aucun sinistre trouvé",
       "emptyHint": "Essayez d'ajuster vos critères ou déclarez un nouveau sinistre.",
@@ -373,7 +359,7 @@
       "required":   "Ce champ est requis.",
       "selectType": "Sélectionnez un type de sinistre.",
       "back":       "Retour",
-      "next":       "Suivant →",
+      "next":       "Suivant",
       "submit":     "Soumettre le sinistre",
       "step1": {
         "title":              "Infos contrat",
@@ -444,15 +430,15 @@
         "totalClaims":  "Sinistres déclarés"
       },
       "card": {
-        "premium":       "Prime",
-        "year":          "an",
-        "deductible":    "Franchise",
-        "ceiling":       "Plafond",
-        "validFrom":     "Valide du",
-        "to":            "au",
-        "claimsDeclared":"Sinistres déclarés",
-        "nextPayment":   "Prochain paiement",
-        "viewDetails":   "Voir les détails"
+        "premium":        "Prime",
+        "year":           "an",
+        "deductible":     "Franchise",
+        "ceiling":        "Plafond",
+        "validFrom":      "Valide du",
+        "to":             "au",
+        "claimsDeclared": "Sinistres déclarés",
+        "nextPayment":    "Prochain paiement",
+        "viewDetails":    "Voir les détails"
       },
       "modal": {
         "holder":     "Titulaire du contrat",

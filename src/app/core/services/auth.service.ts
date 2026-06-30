@@ -3,11 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
 import { User } from '../../shared/models/user.model';
+import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../../environments/environment'; // ← AJOUTÉ
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.apiUrl}/api/auth`; // ← CORRIGÉ
   private currentUser = signal<User | null>(null);
 
   constructor(
@@ -15,73 +17,66 @@ export class AuthService {
     private router:   Router,
     private keycloak: KeycloakService
   ) {
-    // ✅ Charge user depuis localStorage (compatibilité)
     const saved = localStorage.getItem('user');
     if (saved) this.currentUser.set(JSON.parse(saved));
   }
 
-  // ── LOGIN → redirige vers Keycloak ───────────
   login(email?: string, password?: string) {
-    // ✅ Redirige vers page login Keycloak
     return this.keycloak.login({
       redirectUri: window.location.origin + '/login-callback'
     });
   }
 
-  // ── LOGOUT → Keycloak logout ─────────────────
+  profileImage$ = new BehaviorSubject<string>('');
+
+  updateProfileImage(url: string) {
+    this.profileImage$.next(url);
+  }
+
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.currentUser.set(null);
-
-    // ✅ Déconnecte depuis Keycloak
     this.keycloak.logout(
       window.location.origin + '/login'
     );
   }
 
-  // ── Récupère le token Keycloak ────────────────
   getToken(): string {
-    return this.keycloak.getKeycloakInstance()?.token || 
+    return this.keycloak.getKeycloakInstance()?.token ||
            localStorage.getItem('token') || '';
   }
 
-  // ── Récupère les infos user depuis token ──────
- getUser(): any {
-  const kc = this.keycloak.getKeycloakInstance();
+  getUser(): any {
+    const kc = this.keycloak.getKeycloakInstance();
 
-  if (kc?.tokenParsed) {
-    const token = kc.tokenParsed as any;
-    const roles: string[] = 
-      token?.realm_access?.roles || [];
+    if (kc?.tokenParsed) {
+      const token = kc.tokenParsed as any;
+      const roles: string[] =
+        token?.realm_access?.roles || [];
 
-    const role = roles.includes('ROLE_ADMIN') ? 'ADMIN' :
-                 roles.includes('ROLE_CLIENT') ? 'CLIENT' : '';
+      const role = roles.includes('ROLE_ADMIN')  ? 'ADMIN'  :
+                   roles.includes('ROLE_CLIENT') ? 'CLIENT' : '';
 
-    const user: User = {
-      id:           token.sub         || 0,
-      fullName:     token.name        ||
-                    token.preferred_username || '',
-      email:        token.email       || '',
-      role:         role as 'CLIENT' | 'ADMIN',
-      token:        kc.token          || '',
-      type:         'Bearer',
-      cin:          token.cin         || ''
-    };
+      const user: User = {
+        id:       token.sub              || 0,
+        fullName: token.name             ||
+                  token.preferred_username || '',
+        email:    token.email            || '',
+        role:     role as 'CLIENT' | 'ADMIN',
+        token:    kc.token               || '',
+        type:     'Bearer',
+        cin:      token.cin              || ''
+      };
 
-    // ✅ Sync localStorage
-    localStorage.setItem('user', JSON.stringify(user));
-    this.currentUser.set(user);
-    return user;
+      localStorage.setItem('user', JSON.stringify(user));
+      this.currentUser.set(user);
+      return user;
+    }
+
+    return this.currentUser();
   }
 
-  // ✅ Fallback localStorage
-  return this.currentUser();
-}
-
-   
-
-  // ── Getters ───────────────────────────────────
   isLoggedIn(): boolean {
     return this.keycloak.isLoggedIn() ||
            !!localStorage.getItem('token');
@@ -95,7 +90,6 @@ export class AuthService {
     return this.getUser()?.fullName || '';
   }
 
-  // ── Redirect après login ──────────────────────
   redirectByRole() {
     const role = this.getRole();
     if (role === 'ADMIN') {
@@ -107,7 +101,6 @@ export class AuthService {
     }
   }
 
-  // ── Register (garde pour compatibilité) ───────
   register(fullName: string, email: string,
            password: string, cin?: string) {
     return this.http.post<any>(

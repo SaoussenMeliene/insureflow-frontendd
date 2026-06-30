@@ -224,6 +224,8 @@
   "reindexError":   "Error during reindexing",
   "guarantees":     "Guarantees",
   "annualPremium":  "Annual premium",
+  "franchise":      "Deductible",
+  "ceiling":        "Coverage limit",
   "auto": {
     "badge":       "AUTO Contract",
     "name":        "Business & Leisure",
@@ -235,6 +237,18 @@
     "name":     "Madrassati",
     "school":   "School",
     "students": "students"
+  },
+  "home": {
+    "badge": "HOME Contract",
+    "name":  "Multirisks Home Insurance"
+  },
+  "health": {
+    "badge": "HEALTH Contract",
+    "name":  "Individual Accidents"
+  },
+  "other": {
+    "badge": "OTHER Contract",
+    "name":  "Multirisks Miscellaneous"
   }
 }
   },

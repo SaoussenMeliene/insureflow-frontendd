@@ -6,20 +6,25 @@ import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { HumanloopService } from '../../../core/services/humanloop';
 import { ClaimService } from '../../../core/services/claim';
-import { TranslateModule, TranslateService } from '@ngx-translate/core'; // ← AJOUTER TranslateService
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/services/language.service';
+import { AdminSidebarComponent } from '../../../shared/components/admin-sidebar/admin-sidebar.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule, AdminSidebarComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
+  sidebarCollapsed = false;
+  pendingCount     = 0;
+  fullName         = '';
+  loading          = true;
 
-  fullName = '';
-  loading  = true;
+  private api = environment.apiUrl;
 
   stats = {
     totalClaims:    0,
@@ -48,7 +53,7 @@ export class DashboardComponent implements OnInit {
     private claimService:     ClaimService,
     private http:             HttpClient,
     private cdr:              ChangeDetectorRef,
-    private translate:        TranslateService, // ← AJOUTER
+    private translate:        TranslateService,
     public  langService:      LanguageService,
   ) {}
 
@@ -56,7 +61,6 @@ export class DashboardComponent implements OnInit {
     const user = this.authService.getUser();
     if (user) this.fullName = user.fullName || '';
 
-    // ✅ Recharger les cards quand la langue change
     this.translate.onLangChange.subscribe(() => {
       this.cdr.detectChanges();
     });
@@ -65,15 +69,11 @@ export class DashboardComponent implements OnInit {
       claims:    this.claimService.getAllClaims(),
       stats:     this.humanloopService.getStats(),
       reviews:   this.humanloopService.getAll(),
-      workflows: this.http.get<any[]>('http://localhost:8080/api/orchestrator/workflows')
+      workflows: this.http.get<any[]>(`${this.api}/api/orchestrator/workflows`)
     }).subscribe({
       next: ({ claims, stats, reviews, workflows }: any) => {
         this.workflowMap = new Map(
           (workflows || []).map((w: any) => [w.claimId, w])
-        );
-
-        const reviewsMap = new Map(
-          (reviews || []).map((r: any) => [r.claimId, r])
         );
 
         const sorted = [...claims].sort(
@@ -83,34 +83,25 @@ export class DashboardComponent implements OnInit {
         );
         this.recentClaims = sorted.slice(0, 10);
 
-        const priceInflation = reviews.filter(
-          (r: any) => r.fraudType === 'PRICE_INFLATION' ||
-                      r.humanReviewReason?.includes('PRICE_INFLATION')
-        ).length;
+        const wfList = workflows || [];
 
-        const descMismatch = reviews.filter(
-          (r: any) => r.fraudType === 'DESCRIPTION_MISMATCH' ||
-                      r.humanReviewReason?.includes('DESCRIPTION_MISMATCH')
-        ).length;
+        const countFraudType = (type: string) => {
+          return wfList.filter((w: any) => {
+            const types: string[] = w.fraudTypes ?
+              w.fraudTypes.split(',') :
+              (w.fraudType ? [w.fraudType] : []);
+            return types.includes(type);
+          }).length;
+        };
 
-        const internalInconsistency = reviews.filter(
-          (r: any) => r.fraudType === 'INTERNAL_INCONSISTENCY' ||
-                      r.humanReviewReason?.includes('INTERNAL_INCONSISTENCY')
-        ).length;
+        const priceInflation        = countFraudType('PRICE_INFLATION');
+        const descMismatch          = countFraudType('DESCRIPTION_MISMATCH');
+        const internalInconsistency = countFraudType('INTERNAL_INCONSISTENCY');
 
-        const fraudGeneric = reviews.filter(
-          (r: any) => !r.fraudType &&
-                      r.humanReviewReason?.includes('Fraude') &&
-                      !r.humanReviewReason?.includes('PRICE_INFLATION') &&
-                      !r.humanReviewReason?.includes('DESCRIPTION_MISMATCH') &&
-                      !r.humanReviewReason?.includes('INTERNAL_INCONSISTENCY')
-        ).length;
-
-        const fraudsDetected = priceInflation + descMismatch + internalInconsistency + fraudGeneric;
-        const noFraud = reviews.length - fraudsDetected;
+        const fraudsDetected = priceInflation + descMismatch + internalInconsistency;
 
         this.fraudCounts = {
-          NO_FRAUD:               noFraud > 0 ? noFraud : 0,
+          NO_FRAUD:               Math.max(0, reviews.length - fraudsDetected),
           PRICE_INFLATION:        priceInflation,
           DESCRIPTION_MISMATCH:   descMismatch,
           INTERNAL_INCONSISTENCY: internalInconsistency
@@ -122,7 +113,6 @@ export class DashboardComponent implements OnInit {
         const autoRate  = claims.length > 0 ?
           Math.round((completed / claims.length) * 100) : 0;
 
-        const wfList   = workflows || [];
         const avgScore = wfList.length > 0 ?
           Math.round(
             wfList.reduce((acc: number, w: any) => acc + (w.overallScore || 0), 0)
@@ -139,26 +129,27 @@ export class DashboardComponent implements OnInit {
           averageScore:   avgScore
         };
 
+        this.pendingCount = this.stats.pendingReview;
         this.loading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Erreur :', err);
+        console.error('Erreur dashboard :', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  toggleLang() {
+  toggleLang(): void {
     this.langService.toggle();
-    this.cdr.detectChanges(); // ← force le recalcul des getters
+    this.cdr.detectChanges();
   }
 
-  // ── KPI Cards — labels via TranslateService ──
   get overviewCards() {
     return [
       {
-        label:      this.translate.instant('admin.dashboard.cards.totalClaims'),
+        label:      this.translate.instant('admin.dashboard.totalClaims'),
         value:      this.stats.totalClaims,
         icon:       'folder',
         iconBg:     'bg-sky-100',
@@ -166,7 +157,7 @@ export class DashboardComponent implements OnInit {
         valueColor: 'text-sky-600'
       },
       {
-        label:      this.translate.instant('admin.dashboard.cards.pendingReview'),
+        label:      this.translate.instant('admin.dashboard.pendingReview'),
         value:      this.stats.pendingReview,
         icon:       'warning',
         iconBg:     'bg-amber-100',
@@ -174,7 +165,7 @@ export class DashboardComponent implements OnInit {
         valueColor: 'text-amber-600'
       },
       {
-        label:      this.translate.instant('admin.dashboard.cards.approved'),
+        label:      this.translate.instant('admin.dashboard.approved'),
         value:      this.stats.approved,
         icon:       'check',
         iconBg:     'bg-emerald-100',
@@ -182,7 +173,7 @@ export class DashboardComponent implements OnInit {
         valueColor: 'text-emerald-600'
       },
       {
-        label:      this.translate.instant('admin.dashboard.cards.rejected'),
+        label:      this.translate.instant('admin.dashboard.rejected'),
         value:      this.stats.rejected,
         icon:       'x',
         iconBg:     'bg-rose-100',
@@ -190,7 +181,7 @@ export class DashboardComponent implements OnInit {
         valueColor: 'text-rose-600'
       },
       {
-        label:      this.translate.instant('admin.dashboard.cards.automationRate'),
+        label:      this.translate.instant('admin.dashboard.automationRate'),
         value:      this.formatPercentage(this.stats.automationRate),
         icon:       'cpu',
         iconBg:     'bg-teal-100',
@@ -198,7 +189,7 @@ export class DashboardComponent implements OnInit {
         valueColor: 'text-teal-600'
       },
       {
-        label:      this.translate.instant('admin.dashboard.cards.fraudsDetected'),
+        label:      this.translate.instant('admin.dashboard.fraudDetected'),
         value:      this.stats.fraudsDetected,
         icon:       'shield',
         iconBg:     'bg-rose-100',
@@ -206,7 +197,7 @@ export class DashboardComponent implements OnInit {
         valueColor: 'text-rose-600'
       },
       {
-        label:      this.translate.instant('admin.dashboard.cards.avgScore'),
+        label:      this.translate.instant('admin.dashboard.avgAiScore'),
         value:      this.formatScore(this.stats.averageScore),
         icon:       'sparkles',
         iconBg:     'bg-sky-100',
@@ -225,39 +216,24 @@ export class DashboardComponent implements OnInit {
 
       const fraudType = isProcessed ? (
         wf?.fraudType ||
-        (wf?.humanReviewReason?.includes('PRICE_INFLATION') ?  'PRICE_INFLATION' :
-         wf?.humanReviewReason?.includes('DESCRIPTION_MISMATCH') ? 'DESCRIPTION_MISMATCH' :
-         wf?.humanReviewReason?.includes('Fraude') ? 'FRAUD' : 'NO_FRAUD')
+        (wf?.humanReviewReason?.includes('PRICE_INFLATION') ?        'PRICE_INFLATION' :
+         wf?.humanReviewReason?.includes('DESCRIPTION_MISMATCH') ?   'DESCRIPTION_MISMATCH' :
+         wf?.humanReviewReason?.includes('INTERNAL_INCONSISTENCY') ? 'INTERNAL_INCONSISTENCY' :
+         wf?.humanReviewReason?.includes('Fraude') ?                  'FRAUD' : 'NO_FRAUD')
       ) : 'NO_FRAUD';
 
       return {
         reference: claim.reference,
         type:      claim.claimType,
-        status:    this.getStatusLabel(claim.status),
+        status:    claim.status,
         score:     score,
-        fraud:     this.getFraudLabel(fraudType),
+        fraud:     fraudType === 'NO_FRAUD' ? '✓' : '✗',
         date:      this.formatDate(claim.createdAt),
         action:    claim.status === 'HUMAN_REQUIRED' ? 'Examiner' : ''
       };
     });
   }
 
-  get aiPipelineResults() {
-    return this.pipelineRows.map((row: any) => ({
-      reference:  row.claimReference || row.reference,
-      router:     row.claimType ? `${row.claimType} (95%)` : '—',
-      rag:        row.contractDecision || '—',
-      estimation: row.estimatedCostMin && row.estimatedCostMax ?
-        `${row.estimatedCostMin}-${row.estimatedCostMax} DT` : '—',
-      fraud:      row.fraudDetected ?
-        `⚠ ${Math.round((row.fraudScore || 0) * 100)}%` : '✓',
-      finalScore: row.overallScore ?
-        `${Math.round(row.overallScore * 100)}%` : '—',
-      decision:   row.status || row.workflowStatus || '—'
-    }));
-  }
-
-  // ── Fraud Cards — labels via TranslateService ──
   get fraudCards() {
     return [
       {
@@ -283,18 +259,13 @@ export class DashboardComponent implements OnInit {
     ];
   }
 
-  // ── Helpers ──────────────────────────────────
   getStatusBadge(status: string): string {
     const map: { [k: string]: string } = {
-      'Soumis':   'bg-sky-100 text-sky-700',
-      'Révision': 'bg-amber-100 text-amber-700',
-      'En cours': 'bg-violet-100 text-violet-700',
-      'Approuvé': 'bg-emerald-100 text-emerald-700',
-      'Rejeté':   'bg-rose-100 text-rose-700',
-      'Submitted':'bg-sky-100 text-sky-700',
-      'Review':   'bg-amber-100 text-amber-700',
-      'Approved': 'bg-emerald-100 text-emerald-700',
-      'Rejected': 'bg-rose-100 text-rose-700'
+      'SUBMITTED':      'bg-sky-100 text-sky-700',
+      'HUMAN_REQUIRED': 'bg-amber-100 text-amber-700',
+      'COMPLETED':      'bg-violet-100 text-violet-700',
+      'APPROVED':       'bg-emerald-100 text-emerald-700',
+      'REJECTED':       'bg-rose-100 text-rose-700'
     };
     return map[status] || 'bg-slate-100 text-slate-700';
   }

@@ -1,0 +1,136 @@
+<aside [style.width]="collapsed ? '72px' : '260px'"
+  style="position:fixed;left:0;top:0;height:100vh;
+    background:white;border-right:1px solid #e8eaff;
+    display:flex;flex-direction:column;z-index:100;
+    overflow:hidden;transition:width 0.3s ease;">
+
+  <!-- Logo + Toggle -->
+  <div style="padding:20px 16px;display:flex;align-items:center;
+    justify-content:space-between;min-height:72px;">
+
+    <img *ngIf="!collapsed" src="logo.png" alt="InsureFlow"
+      style="height:40px;object-fit:contain;transition:opacity 0.2s;"/>
+
+    <button (click)="toggleSidebar()"
+      style="width:36px;height:36px;border-radius:10px;border:1.5px solid #e2e8f0;
+        background:white;cursor:pointer;display:flex;align-items:center;
+        justify-content:center;flex-shrink:0;transition:all 0.2s;"
+      [style.marginLeft]="collapsed ? 'auto' : '0'"
+      [style.marginRight]="collapsed ? 'auto' : '0'">
+      <span class="material-icons-round"
+        style="font-size:20px;color:#6366f1;transition:transform 0.3s;"
+        [style.transform]="collapsed ? 'rotate(0deg)' : 'rotate(180deg)'">
+        chevron_left
+      </span>
+    </button>
+  </div>
+
+  <!-- Nav -->
+  <nav style="flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:4px;">
+
+    <!-- Dashboard -->
+    <a routerLink="/admin/dashboard" routerLinkActive="active-nav"
+      [routerLinkActiveOptions]="{ exact: true }" class="nav-link"
+      [title]="collapsed ? ('nav.overview' | translate) : ''"
+      style="display:flex;align-items:center;gap:12px;padding:11px 14px;
+        border-radius:12px;text-decoration:none;font-size:14px;font-weight:600;
+        color:#334155;transition:all 0.2s;white-space:nowrap;overflow:hidden;">
+      <span class="material-icons-round"
+        style="font-size:22px;color:#6366f1;flex-shrink:0;">
+        dashboard
+      </span>
+      <span *ngIf="!collapsed" style="transition:opacity 0.2s;">
+        {{ 'nav.overview' | translate }}
+      </span>
+    </a>
+
+    <!-- Sinistres -->
+    <a routerLink="/admin/claims" routerLinkActive="active-nav" class="nav-link"
+      [title]="collapsed ? ('nav.claims' | translate) : ''"
+      style="display:flex;align-items:center;gap:12px;padding:11px 14px;
+        border-radius:12px;text-decoration:none;font-size:14px;font-weight:600;
+        color:#334155;transition:all 0.2s;white-space:nowrap;overflow:hidden;">
+      <span class="material-icons-round"
+        style="font-size:22px;color:#6366f1;flex-shrink:0;">
+        folder_open
+      </span>
+      <span *ngIf="!collapsed">{{ 'nav.claims' | translate }}</span>
+    </a>
+
+    <!-- Review -->
+    <a routerLink="/admin/review" routerLinkActive="active-nav" class="nav-link"
+      [title]="collapsed ? ('nav.review' | translate) : ''"
+      style="display:flex;align-items:center;justify-content:space-between;
+        padding:11px 14px;border-radius:12px;text-decoration:none;font-size:14px;
+        font-weight:600;color:#334155;transition:all 0.2s;white-space:nowrap;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="material-icons-round"
+          style="font-size:22px;color:#6366f1;flex-shrink:0;">
+          rate_review
+        </span>
+        <span *ngIf="!collapsed">{{ 'nav.review' | translate }}</span>
+      </div>
+      <span *ngIf="!collapsed && pendingCount > 0"
+        style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;
+          padding:2px 8px;border-radius:999px;">
+        {{ pendingCount }}
+      </span>
+    </a>
+
+    <!-- Utilisateurs -->
+    <a routerLink="/admin/users" routerLinkActive="active-nav" class="nav-link"
+      [title]="collapsed ? ('nav.users' | translate) : ''"
+      style="display:flex;align-items:center;gap:12px;padding:11px 14px;
+        border-radius:12px;text-decoration:none;font-size:14px;font-weight:600;
+        color:#334155;transition:all 0.2s;white-space:nowrap;overflow:hidden;">
+      <span class="material-icons-round"
+        style="font-size:22px;color:#6366f1;flex-shrink:0;">
+        group
+      </span>
+      <span *ngIf="!collapsed">{{ 'nav.users' | translate }}</span>
+    </a>
+
+    <!-- Contrats -->
+    <a routerLink="/admin/contracts" routerLinkActive="active-nav" class="nav-link"
+      [title]="collapsed ? ('nav.contracts' | translate) : ''"
+      style="display:flex;align-items:center;gap:12px;padding:11px 14px;
+        border-radius:12px;text-decoration:none;font-size:14px;font-weight:600;
+        color:#334155;transition:all 0.2s;white-space:nowrap;overflow:hidden;">
+      <span class="material-icons-round"
+        style="font-size:22px;color:#6366f1;flex-shrink:0;">
+        verified_user
+      </span>
+      <span *ngIf="!collapsed">{{ 'nav.contracts' | translate }}</span>
+    </a>
+
+  </nav>
+
+  <!-- User + Logout -->
+  <div style="padding:16px 12px 24px;border-top:1px solid #e2e8f0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;
+      padding:10px 12px;border-radius:12px;background:rgba(79,70,229,0.08);">
+      <div style="display:flex;align-items:center;gap:10px;overflow:hidden;">
+        <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;
+          background:linear-gradient(135deg,#4f46e5,#7c3aed);
+          display:flex;align-items:center;justify-content:center;
+          font-weight:800;font-size:14px;color:white;">
+          {{ fullName ? fullName.charAt(0) : 'A' }}
+        </div>
+        <div *ngIf="!collapsed" style="overflow:hidden;">
+          <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ fullName }}
+          </p>
+          <span style="font-size:11px;color:#6366f1;">Admin</span>
+        </div>
+      </div>
+      <button *ngIf="!collapsed" type="button" (click)="logout()"
+        style="padding:6px;border:none;background:none;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;
+          color:#ef4444;flex-shrink:0;">
+        <span class="material-icons-round" style="font-size:20px;">logout</span>
+      </button>
+    </div>
+  </div>
+
+</aside>

@@ -4,29 +4,28 @@ import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment'; // ← AJOUTÉ
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDF6OPbo5xr_iaYNOqDykNT1O35bCVVX1g",
-  authDomain: "insureflow-b2aff.firebaseapp.com",
-  projectId: "insureflow-b2aff",
-  storageBucket: "insureflow-b2aff.firebasestorage.app",
+  apiKey:            "AIzaSyDF6OPbo5xr_iaYNOqDykNT1O35bCVVX1g",
+  authDomain:        "insureflow-b2aff.firebaseapp.com",
+  projectId:         "insureflow-b2aff",
+  storageBucket:     "insureflow-b2aff.firebasestorage.app",
   messagingSenderId: "755938427431",
-  appId: "1:755938427431:web:1a7bb21dd1980388fa0402"
+  appId:             "1:755938427431:web:1a7bb21dd1980388fa0402"
 };
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseNotificationService {
 
-  // ✅ Charge depuis localStorage au démarrage
   private notificationsSubject = new BehaviorSubject<any[]>(
     JSON.parse(localStorage.getItem('insureflow_notifications') || '[]')
   );
   notifications$ = this.notificationsSubject.asObservable();
 
-  // ✅ Compteur de notifications vues
   private seenCount = parseInt(localStorage.getItem('insureflow_seen') || '0');
 
-  private apiUrl    = 'http://localhost:8080';
+  private apiUrl    = environment.apiUrl; // ← CORRIGÉ
   private app       = initializeApp(firebaseConfig);
   private messaging = getMessaging(this.app);
 
@@ -34,7 +33,6 @@ export class FirebaseNotificationService {
     private http:        HttpClient,
     private authService: AuthService
   ) {
-    // ✅ Écoute les messages du service worker (background)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data?.type === 'NOTIFICATION_CLICK') {
@@ -67,7 +65,6 @@ export class FirebaseNotificationService {
         this.saveFcmToken(token);
       }
 
-      // ✅ Écoute foreground
       onMessage(this.messaging, (payload) => {
         console.log('📩 Notification foreground:', payload);
         this.addNotif(
@@ -81,7 +78,6 @@ export class FirebaseNotificationService {
     }
   }
 
-  // ✅ Méthode centrale pour ajouter + persister
   private addNotif(title: string, body: string) {
     const current = this.notificationsSubject.getValue();
     const newNotifs = [
@@ -92,24 +88,20 @@ export class FirebaseNotificationService {
     localStorage.setItem('insureflow_notifications', JSON.stringify(newNotifs));
   }
 
-  // ✅ Nombre de notifications non lues
   getUnreadCount(): number {
     const total = this.notificationsSubject.getValue().length;
     return Math.max(0, total - this.seenCount);
   }
 
-  // ✅ Marquer toutes comme vues
   markAsSeen() {
     this.seenCount = this.notificationsSubject.getValue().length;
     localStorage.setItem('insureflow_seen', String(this.seenCount));
   }
 
-  // ✅ Ajouter une notification manuellement
   addNotification(title: string, body: string) {
     this.addNotif(title, body);
   }
 
-  // ✅ Effacer toutes les notifications
   clearNotifications() {
     this.notificationsSubject.next([]);
     this.seenCount = 0;
@@ -117,7 +109,6 @@ export class FirebaseNotificationService {
     localStorage.removeItem('insureflow_seen');
   }
 
-  // ✅ Callback pour écouter dans les composants
   onMessage(callback: (payload: any) => void) {
     onMessage(this.messaging, callback);
   }
@@ -130,7 +121,7 @@ export class FirebaseNotificationService {
     if (!email) return;
 
     this.http.patch(
-      `${this.apiUrl}/api/auth/users/email/${email}/fcm-token`,
+      `${this.apiUrl}/api/auth/users/email/${email}/fcm-token`, // ← CORRIGÉ
       { fcmToken }
     ).subscribe({
       next: () => console.log('✅ FCM token sauvegardé'),

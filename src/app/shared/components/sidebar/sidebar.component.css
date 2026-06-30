@@ -1,0 +1,25 @@
+/* ── NAV LINKS ── */
+.nav-link:hover {
+  background: #f5f3ff !important;
+  color: #4f46e5 !important;
+}
+
+.nav-link:hover svg {
+  color: #4f46e5 !important;
+}
+
+/* ── ACTIVE ── */
+:host ::ng-deep .active-nav {
+  background: #ede9fe !important;
+  color: #4f46e5 !important;
+}
+
+:host ::ng-deep .active-nav svg {
+  color: #4f46e5 !important;
+}
+
+/* ── LOGOUT ── */
+.logout-btn:hover {
+  background: #fef2f2 !important;
+  color: #ef4444 !important;
+}

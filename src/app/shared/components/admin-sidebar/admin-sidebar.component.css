@@ -1,0 +1,13 @@
+.nav-link:hover {
+  background: #ede9fe !important;
+  color: #4f46e5 !important;
+}
+
+:host ::ng-deep .active-nav {
+  background: #ede9fe !important;
+  color: #4f46e5 !important;
+}
+
+:host ::ng-deep .active-nav svg {
+  color: #4f46e5 !important;
+}

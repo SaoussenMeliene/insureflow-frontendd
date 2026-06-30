@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment'; // ← AJOUTÉ
 
 export interface AppUser {
-  id: number;
-  fullName: string;
-  email: string;
-  role: string;
-  status: string;
+  id:        number;
+  fullName:  string;
+  email:     string;
+  role:      string;
+  status:    string;
   createdAt: string;
 }
 
@@ -15,7 +16,8 @@ export interface AppUser {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+
+  private apiUrl = `${environment.apiUrl}/api/auth`; // ← CORRIGÉ
 
   constructor(private http: HttpClient) {}
 
@@ -28,6 +30,8 @@ export class UserService {
   }
 
   updateUserStatus(id: number, status: string): Observable<AppUser> {
-    return this.http.patch<AppUser>(`${this.apiUrl}/users/${id}/status`, { status });
+    return this.http.patch<AppUser>(
+      `${this.apiUrl}/users/${id}/status`, { status }
+    );
   }
 }

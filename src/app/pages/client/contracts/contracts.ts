@@ -6,30 +6,37 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { FirebaseNotificationService } from '../../../core/services/firebase.service';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';                              // ← AJOUTER
-import { LanguageService } from '../../../core/services/language.service';  
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../core/services/language.service';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar.component';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { environment } from '../../../../environments/environment';
+
 @Component({
   selector: 'app-contracts',
   standalone: true,
-  imports: [CommonModule, RouterModule,TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule, SidebarComponent, HeaderComponent],
   templateUrl: './contracts.html',
   styleUrl: './contracts.css'
 })
 export class ContractsComponent implements OnInit, OnDestroy {
 
-  fullName         = '';
-  role             = '';
-  email            = '';
-  profileImage     = '';
-  contracts: any[] = [];
-  isModalOpen      = false;
+  fullName              = '';
+  role                  = '';
+  email                 = '';
+  profileImage          = '';
+  contracts: any[]      = [];
+  isModalOpen           = false;
   selectedContract: any = null;
+  totalClaimsCount      = 0;
 
-  // ✅ Notifications
-  notifCount     = 0;
-  notifications: any[] = [];
-  showNotifPanel = false;
+  notifCount            = 0;
+  notifications: any[]  = [];
+  showNotifPanel        = false;
   private notifSub?: Subscription;
+
+  private api    = environment.apiUrl;
+  private ragApi = environment.apiUrl;
 
   constructor(
     private authService:     AuthService,
@@ -37,14 +44,13 @@ export class ContractsComponent implements OnInit, OnDestroy {
     private http:            HttpClient,
     private cdr:             ChangeDetectorRef,
     private firebaseService: FirebaseNotificationService,
-    public langService: LanguageService,
+    public  langService:     LanguageService,
   ) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.profileImage = user.profileImage || '';
   }
 
   ngOnInit() {
-    // ✅ Subscribe au BehaviorSubject partagé
     this.notifSub = this.firebaseService.notifications$.subscribe(notifs => {
       this.notifications = notifs;
       this.notifCount    = this.firebaseService.getUnreadCount();
@@ -59,25 +65,31 @@ export class ContractsComponent implements OnInit, OnDestroy {
     this.email    = user.email    || '';
 
     this.http.get<any>(
-      `http://localhost:8080/api/auth/profile/email/${user.email}`
+      `${this.api}/api/auth/profile/email/${user.email}`
     ).subscribe({
       next: (profile) => {
         this.fullName = profile.fullName || user.fullName;
 
         if (profile.profileImage) {
           this.profileImage =
-            `http://localhost:8080/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
+            `${this.api}/api/auth/profile-image/${profile.id}?t=${Date.now()}`;
           this.cdr.detectChanges();
         }
 
         this.http.get<any[]>(
-          `http://localhost:8080/api/claims/client/${profile.id}`
+          `${this.api}/api/claims/client/${profile.id}`
         ).subscribe({
-          next: (claims) => this.loadContractsByEmail(user.email, claims.length),
-          error: ()       => this.loadContractsByEmail(user.email, 0)
+          next: (claims) => {
+            this.totalClaimsCount = claims.length;
+            this.loadContractsByEmail(user.email);
+          },
+          error: () => {
+            this.totalClaimsCount = 0;
+            this.loadContractsByEmail(user.email);
+          }
         });
       },
-      error: () => this.loadContractsByEmail(user.email, 0)
+      error: () => this.loadContractsByEmail(user.email)
     });
   }
 
@@ -85,104 +97,126 @@ export class ContractsComponent implements OnInit, OnDestroy {
     this.notifSub?.unsubscribe();
   }
 
-  // ✅ Toggle panel
   toggleNotifPanel() {
-  this.showNotifPanel = !this.showNotifPanel;
-  if (this.showNotifPanel) {
-    this.notifCount = 0;
-    this.firebaseService.markAsSeen(); // ← AJOUTER
+    this.showNotifPanel = !this.showNotifPanel;
+    if (this.showNotifPanel) {
+      this.notifCount = 0;
+      this.firebaseService.markAsSeen();
+    }
   }
-}
 
-  // ✅ Effacer notifications
   clearNotifications() {
     this.firebaseService.clearNotifications();
     this.showNotifPanel = false;
   }
 
   toggleLang() {
-  this.langService.toggle();
-}
+    this.langService.toggle();
+  }
 
-  loadContractsByEmail(email: string, claimsCount: number) {
-    const emailLower = email.toLowerCase().trim();
+  loadContractsByEmail(email: string) {
+    const policyNumbers = [
+      '202650000000037',
+      '202610000000083',
+      '202643200000001',
+      '202631100000001',
+      '202662100000001'
+    ];
 
-    const CONTRACT_AUTO = {
-      type:          'Automobile',
-      insuranceType: '521 Affaires et Promenades',
-      number:        '202650000000037',
-      status:        'ACTIF',
-      startDate:     '19/03/2026',
-      endDate:       '19/03/2027',
-      prime:         2026.933,
-      franchise:     '5%',
-      plafond:       56516.856,
-      claimsCount:   claimsCount,
-      paymentMethod: 'ANNUAL',
-      nextPayment:   { date: '19/03/2027' },
-      guarantees: [
-        { name: 'Responsabilité Civile Illimitée' },
-        { name: 'Dommage collision (franchise 5%)' },
-        { name: 'Vol : 56 516 DT' },
-        { name: 'Incendie : 56 516 DT' },
-        { name: 'Bris de glace (franchise 5%)' },
-        { name: 'Assistance remorquage Premium' },
-        { name: 'Voiture de remplacement 15 jours' }
-      ]
+    this.contracts = [];
+
+    policyNumbers.forEach(policyNumber => {
+      this.http.get<any>(
+        `${this.ragApi}/api/contract-rag/contracts/${policyNumber}`
+      ).subscribe({
+        next: (data) => {
+
+          // ✅ On garde contractType (AUTO, HOME...) séparément
+          // pour que getTypeColor/getTypeBg/getTypeGradient fonctionnent
+          this.contracts.push({
+            type:          data.contractType,          // ← 'AUTO', 'HOME', etc.
+            label:         this.getTypeLabel(data.contractType), // ← 'Automobile', etc.
+            insuranceType: data.productName,
+            number:        data.policyNumber,
+            status:        data.status,
+            startDate:     data.startDate,
+            endDate:       data.endDate,
+            prime:         data.annualPremium,
+            franchise:     data.franchise,
+            plafond:       data.plafond,
+            claimsCount:   this.totalClaimsCount,
+            paymentMethod: 'ANNUAL',
+            nextPayment:   { date: data.endDate },
+            holderName:    this.fullName,
+            holderEmail:   email,
+            holderAddress: 'Tunisie',
+            guarantees:    (data.garanties || []).map((g: string) => ({ name: g }))
+          });
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.warn(`Contrat ${policyNumber} non trouvé:`, err);
+        }
+      });
+    });
+  }
+
+  // ✅ Label lisible par type
+  getTypeLabel(type: string): string {
+    const map: { [key: string]: string } = {
+      'AUTO':     'Automobile',
+      'SCOLAIRE': 'Multirisques Scolaire',
+      'HOME':     'Habitation',
+      'HEALTH':   'Santé',
+      'OTHER':    'Autres'
     };
+    return map[type] || type;
+  }
 
-    const CONTRACT_SCOLAIRE = {
-      type:          'Multirisques Scolaire',
-      insuranceType: '171 Madrassati',
-      number:        '202610000000083',
-      status:        'ACTIF',
-      startDate:     '20/03/2026',
-      endDate:       '19/03/2027',
-      prime:         333.400,
-      franchise:     '100 DT',
-      plafond:       100000,
-      claimsCount:   claimsCount,
-      paymentMethod: 'ANNUAL',
-      nextPayment:   { date: '19/03/2027' },
-      guarantees: [
-        { name: 'Incendie Bâtiment : 500 000 DT' },
-        { name: 'RC Exploitation' },
-        { name: 'RC Professionnelle' },
-        { name: 'Individuelle Accident élèves' },
-        { name: 'Frais médicaux : 300 DT' }
-      ]
+  // ✅ Couleur par type
+  getTypeColor(type: string): string {
+    const map: { [key: string]: string } = {
+      'AUTO':     '#3b82f6',
+      'HOME':     '#10b981',
+      'HEALTH':   '#ec4899',
+      'SCOLAIRE': '#8b5cf6',
+      'OTHER':    '#f97316'
     };
+    return map[type] || '#4f46e5';
+  }
 
-    const emailToContracts: { [key: string]: any[] } = {
-      'wafa@gmail.com'     : [CONTRACT_AUTO],
-      'amine@gmail.com'    : [CONTRACT_AUTO],
-      'ali@gmail.com'      : [CONTRACT_AUTO, CONTRACT_SCOLAIRE],
-      'client@email.com'   : [CONTRACT_AUTO],
-      'scolaire@email.com' : [CONTRACT_SCOLAIRE],
-      'ahmed@email.com'    : [CONTRACT_SCOLAIRE]
+  // ✅ Fond par type
+  getTypeBg(type: string): string {
+    const map: { [key: string]: string } = {
+      'AUTO':     '#eff6ff',
+      'HOME':     '#ecfdf5',
+      'HEALTH':   '#fdf2f8',
+      'SCOLAIRE': '#f5f3ff',
+      'OTHER':    '#fff7ed'
     };
+    return map[type] || '#f5f3ff';
+  }
 
-    const contractList = emailToContracts[emailLower];
-
-    this.contracts = contractList
-      ? contractList.map(contract => ({
-          ...contract,
-          holderName:    this.fullName,
-          holderEmail:   email,
-          holderAddress: 'Tunisie'
-        }))
-      : [];
-
-    console.log('Contrats trouvés :', this.contracts.length);
-    this.cdr.detectChanges();
+  // ✅ Gradient bouton par type
+  getTypeGradient(type: string): string {
+    const map: { [key: string]: string } = {
+      'AUTO':     'linear-gradient(135deg,#3b82f6,#2563eb)',
+      'HOME':     'linear-gradient(135deg,#10b981,#059669)',
+      'HEALTH':   'linear-gradient(135deg,#ec4899,#db2777)',
+      'SCOLAIRE': 'linear-gradient(135deg,#8b5cf6,#7c3aed)',
+      'OTHER':    'linear-gradient(135deg,#f97316,#ea580c)'
+    };
+    return map[type] || 'linear-gradient(135deg,#4f46e5,#7c3aed)';
   }
 
   getTotalPremium(): number {
-    return this.contracts.reduce((sum, c) => sum + c.prime, 0);
+    return Math.round(
+      this.contracts.reduce((sum, c) => sum + (c.prime || 0), 0) * 100
+    ) / 100;
   }
 
   getTotalClaims(): number {
-    return this.contracts.reduce((sum, c) => sum + c.claimsCount, 0);
+    return this.totalClaimsCount;
   }
 
   openModal(contract: any) {
@@ -195,24 +229,8 @@ export class ContractsComponent implements OnInit, OnDestroy {
     this.selectedContract = null;
   }
 
-  getContractTypeIcon(type: string): string {
-    return type === 'Automobile' ? '🚗' : '🏫';
-  }
-
-  getContractTypeColor(type: string): string {
-    return type === 'Automobile'
-      ? 'bg-blue-50 border-blue-200'
-      : 'bg-green-50 border-green-200';
-  }
-
-  getStatusClass(status: string): string {
-    return status === 'ACTIF'
-      ? 'bg-green-100 text-green-700'
-      : 'bg-red-100 text-red-700';
-  }
-
   getStatusLabel(status: string): string {
-    return status === 'ACTIF' ? '✓ Actif' : '✗ Inactif';
+    return status === 'ACTIF' || status === 'ACTIVE' ? 'Actif' : 'Inactif';
   }
 
   getPaymentMethodLabel(method: string): string {
